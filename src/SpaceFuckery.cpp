@@ -1,5 +1,7 @@
 #include "SpaceFuckery.h"
+
 #include <OgreException.h>
+#include <OgreConfigFile.h>
 
 TutorialApplication::TutorialApplication()
   : mRoot(0),
@@ -14,7 +16,25 @@ TutorialApplication::TutorialApplication()
     mPluginsCfg = "plugins.cfg";
   #endif
 
+
   mRoot = new Ogre::Root(mPluginsCfg);
+  Ogre::ConfigFile cf;
+  cf.load(mResourcesCfg);
+
+  Ogre::String name, locType;
+  Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
+  while (secIt.hasMoreElements())
+  {
+    Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
+    Ogre::ConfigFile::SettingsMultiMap::iterator it;
+    for (it = settings->begin(); it != settings->end(); ++it)
+    {
+      locType = it->first;
+      name = it->second;
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
+    }
+  }
+
 }
 
 TutorialApplication::~TutorialApplication()
