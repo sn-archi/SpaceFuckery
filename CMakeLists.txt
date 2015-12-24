@@ -35,7 +35,7 @@ endif ()
 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/")
 
 find_package(OGRE REQUIRED)
 find_package(OIS REQUIRED)
@@ -98,16 +98,14 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/media)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 install(TARGETS ${APP}
-    RUNTIME DESTINATION bin
-    CONFIGURATIONS All)
-
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/media
-    DESTINATION ./
-    CONFIGURATIONS Release RelWithDebInfo Debug
+        RUNTIME DESTINATION bin
+        CONFIGURATIONS All
 )
 
-install(FILES ${CMAKE_SOURCE_DIR}/bin/plugins.cfg
-    ${CMAKE_SOURCE_DIR}/bin/resources.cfg
-    DESTINATION bin
-    CONFIGURATIONS Release RelWithDebInfo Debug
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/dist/media
+        DESTINATION ./
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/dist/etc
+        DESTINATION ./
 )

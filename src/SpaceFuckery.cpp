@@ -9,11 +9,11 @@ TutorialApplication::TutorialApplication()
     mPluginsCfg(Ogre::StringUtil::BLANK)
 {
   #ifdef _DEBUG
-    mResourcesCfg = "resources_d.cfg";
-    mPluginsCfg = "plugins_d.cfg";
+    mResourcesCfg = "etc/resources_d.cfg";
+    mPluginsCfg = "etc/plugins_d.cfg";
   #else
-    mResourcesCfg = "resources.cfg";
-    mPluginsCfg = "plugins.cfg";
+    mResourcesCfg = "etc/resources.cfg";
+    mPluginsCfg = "etc/plugins.cfg";
   #endif
 
 
