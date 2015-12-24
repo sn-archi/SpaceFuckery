@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+
 set(APP "SpaceFuckery")
 
 set(HDRS
@@ -24,24 +26,24 @@ elseif(EXISTS "/usr/share/OGRE/cmake/modules")
 else ()
     message(SEND_ERROR "Failed to find module path.")
 endif()
- 
+
 if (CMAKE_BUILD_TYPE STREQUAL "")
     # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
     # differentiation between debug and release builds.
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
- 
+
 set(CMAKE_DEBUG_POSTFIX "_d")
- 
+
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
- 
+
 find_package(OGRE REQUIRED)
 find_package(OIS REQUIRED)
- 
+
 if(NOT OIS_FOUND)
     message(SEND_ERROR "Failed to find OIS.")
 endif()
- 
+
 # Find Boost
 # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
 set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
@@ -69,7 +71,7 @@ include_directories(${Boost_INCLUDE_DIR})
 # http://stackoverflow.com/a/30877725/2180332
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_NO_DEPRECATED)
 set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
- 
+
 include_directories(
     ${OIS_INCLUDE_DIRS}
     ${OGRE_INCLUDE_DIRS}
@@ -77,11 +79,11 @@ include_directories(
     ${OGRE_Overlay_INCLUDE_DIRS}
     ${OGRE_Terrain_INCLUDE_DIRS}
 )
- 
+
 add_executable(${APP} WIN32 ${HDRS} ${SRCS})
- 
+
 set_target_properties(${APP} PROPERTIES DEBUG_POSTFIX _d)
- 
+
 target_link_libraries(
     ${APP}
     ${OGRE_LIBRARIES}
@@ -89,10 +91,10 @@ target_link_libraries(
     ${OGRE_Overlay_LIBRARIES}
     ${OGRE_Terrain_LIBRARIES}
 )
- 
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/media)
- 
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 install(TARGETS ${APP}
