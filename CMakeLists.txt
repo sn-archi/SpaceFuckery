@@ -40,6 +40,8 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/")
 find_package(OGRE REQUIRED)
 find_package(OIS REQUIRED)
 
+pkg_check_modules(CEGUI REQUIRED CEGUI-0 CEGUI-0-OGRE)
+
 if(NOT OIS_FOUND)
     message(SEND_ERROR "Failed to find OIS.")
 endif()
@@ -75,9 +77,9 @@ set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 include_directories(
     ${OIS_INCLUDE_DIRS}
     ${OGRE_INCLUDE_DIRS}
-    ${OGRE_SAMPLES_INCLUDEPATH}
     ${OGRE_Overlay_INCLUDE_DIRS}
     ${OGRE_Terrain_INCLUDE_DIRS}
+    ${CEGUI_INCLUDE_DIRS}
 )
 
 add_executable(${APP} WIN32 ${HDRS} ${SRCS})
@@ -90,6 +92,7 @@ target_link_libraries(
     ${OIS_LIBRARIES}
     ${OGRE_Overlay_LIBRARIES}
     ${OGRE_Terrain_LIBRARIES}
+    ${CEGUI_LIBRARIES}
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
