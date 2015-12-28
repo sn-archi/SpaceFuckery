@@ -160,13 +160,8 @@ bool SpaceFuckery::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID
 
 bool SpaceFuckery::initApp(void)
 {
-#ifdef _DEBUG
-  mResourcesCfg = "etc/resources_d.cfg";
-  mPluginsCfg = "etc/plugins_d.cfg";
-#else
   mResourcesCfg = "etc/resources.cfg";
   mPluginsCfg = "etc/plugins.cfg";
-#endif
 
   mRoot = new Ogre::Root(mPluginsCfg);
 
