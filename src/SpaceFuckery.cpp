@@ -13,6 +13,24 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
+CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
+{
+  switch (buttonID)
+  {
+    case OIS::MB_Left:
+      return CEGUI::LeftButton;
+
+    case OIS::MB_Right:
+      return CEGUI::RightButton;
+
+    case OIS::MB_Middle:
+      return CEGUI::MiddleButton;
+
+    default:
+      return CEGUI::LeftButton;
+  }
+}
+
 SpaceFuckery::SpaceFuckery()
   : mRoot(0),
     mWindow(0),
@@ -20,7 +38,8 @@ SpaceFuckery::SpaceFuckery()
     mPluginsCfg(Ogre::StringUtil::BLANK),
     mInputManager(0),
     mMouse(0),
-    mKeyboard(0)
+    mKeyboard(0),
+    mShutDown(false)
 {
 }
 
@@ -61,10 +80,35 @@ void SpaceFuckery::windowClosed(Ogre::RenderWindow* rw)
   }
 }
 
+void SpaceFuckery::createFrameListener(void)
+{
+  Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+  OIS::ParamList pl;
+  size_t windowHnd = 0;
+  std::ostringstream windowHndStr;
+
+  mWindow->getCustomAttribute("WINDOW", &windowHnd);
+  windowHndStr << windowHnd;
+  pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+
+  mInputManager = OIS::InputManager::createInputSystem( pl );
+  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
+  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
+  //Set initial mouse clipping size
+  windowResized(mWindow);
+
+  //Register as a Window listener
+  Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
+  mRoot->addFrameListener(this);
+}
+
 bool SpaceFuckery::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
   if(mWindow->isClosed())
     return false;
+
+  if(mShutDown)
+      return false;
 
   //Need to capture/update each device
   mKeyboard->capture();
@@ -78,30 +122,41 @@ bool SpaceFuckery::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
 bool SpaceFuckery::keyPressed( const OIS::KeyEvent &arg )
 {
-  return BaseApplication::keyPressed(arg);
-}
-//-------------------------------------------------------------------------------------
-bool SpaceFuckery::keyReleased( const OIS::KeyEvent &arg )
-{
-  return BaseApplication::keyReleased(arg);
-}
-//-------------------------------------------------------------------------------------
-bool SpaceFuckery::mouseMoved( const OIS::MouseEvent &arg )
-{
-  return BaseApplication::mouseMoved(arg);
-}
-//-------------------------------------------------------------------------------------
-bool SpaceFuckery::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
-  return BaseApplication::mousePressed(arg, id);
-}
-//-------------------------------------------------------------------------------------
-bool SpaceFuckery::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-{
-  return BaseApplication::mouseReleased(arg, id);
+  CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
+  context.injectKeyDown((CEGUI::Key::Scan)arg.key);
+  context.injectChar((CEGUI::Key::Scan)arg.text);
+  return true;
 }
 
-bool SpaceFuckery::go()
+bool SpaceFuckery::keyReleased( const OIS::KeyEvent &arg )
+{
+  CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp((CEGUI::Key::Scan)arg.key);
+  return true;
+}
+
+bool SpaceFuckery::mouseMoved( const OIS::MouseEvent &arg )
+{
+  CEGUI::System &sys = CEGUI::System::getSingleton();
+  sys.getDefaultGUIContext().injectMouseMove(arg.state.X.rel, arg.state.Y.rel);
+  // Scroll wheel.
+  if (arg.state.Z.rel)
+    sys.getDefaultGUIContext().injectMouseWheelChange(arg.state.Z.rel / 120.0f);
+  return true;
+}
+
+bool SpaceFuckery::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+  CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonDown(convertButton(id));
+  return true;
+}
+
+bool SpaceFuckery::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+  CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp(convertButton(id));
+  return true;
+}
+
+bool SpaceFuckery::initApp(void)
 {
 #ifdef _DEBUG
   mResourcesCfg = "etc/resources_d.cfg";
@@ -132,6 +187,7 @@ bool SpaceFuckery::go()
 
   if(!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
     return false;
+
   mWindow = mRoot->initialise(true, "SpaceFuckery Render Window");
 
   mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
@@ -140,8 +196,27 @@ bool SpaceFuckery::go()
   CEGUI::Scheme::setDefaultResourceGroup("Schemes");
   CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
   CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+}
+
+void SpaceFuckery::createScene(void)
+{
   CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
   CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+  CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
+  CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
+  CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "CEGUIDemo/QuitButton");
+  quit->setText("Quit");
+  quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+  sheet->addChild(quit);
+  CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
+}
+
+bool SpaceFuckery::go()
+{
+  std::cout << "*** Initializing SpaceFuckery ***";
+  SpaceFuckery::initApp();
+  std::cout << "*** Creating SpaceFuckery's main scene ***";
+  SpaceFuckery::createScene();
 
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
@@ -173,24 +248,7 @@ bool SpaceFuckery::go()
 
   Ogre::Light* light = mSceneMgr->createLight("MainLight");
   light->setPosition(20, 80, 50);
-  Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
-  OIS::ParamList pl;
-  size_t windowHnd = 0;
-  std::ostringstream windowHndStr;
 
-  mWindow->getCustomAttribute("WINDOW", &windowHnd);
-  windowHndStr << windowHnd;
-  pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-
-  mInputManager = OIS::InputManager::createInputSystem( pl );
-  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, false ));
-  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, false ));
-  //Set initial mouse clipping size
-  windowResized(mWindow);
-
-  //Register as a Window listener
-  Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
-  mRoot->addFrameListener(this);
   mRoot->startRendering();
   return true;
 }
