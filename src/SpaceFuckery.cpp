@@ -13,6 +13,8 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
+#include <OgreStringVector.h>
+
 CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
 {
   switch (buttonID)
@@ -171,17 +173,18 @@ bool SpaceFuckery::initApp(void)
   Ogre::ConfigFile cf;
   cf.load(mResourcesCfg);
 
-  Ogre::String name, locType;
+  Ogre::String name, locType, secName;
   Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
   while (secIt.hasMoreElements())
   {
+    secName = secIt.peekNextKey();
     Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
     Ogre::ConfigFile::SettingsMultiMap::iterator it;
     for (it = settings->begin(); it != settings->end(); ++it)
     {
       locType = it->first;
       name = it->second;
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType, secName);
     }
   }
 
@@ -189,6 +192,7 @@ bool SpaceFuckery::initApp(void)
     return false;
 
   mWindow = mRoot->initialise(true, "SpaceFuckery Render Window");
+  Ogre::StringVector rg = Ogre::ResourceGroupManager::getSingleton().getResourceGroups();
 
   mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
   CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
