@@ -17,7 +17,6 @@ class SpaceFuckery:
     SpaceFuckery();
     virtual ~SpaceFuckery();
     bool go();
-    bool quit(const CEGUI::EventArgs &e);
   private:
     Ogre::Root* mRoot;
     Ogre::String mResourcesCfg;
@@ -28,6 +27,7 @@ class SpaceFuckery:
     OIS::Keyboard* mKeyboard;
     CEGUI::OgreRenderer* mRenderer;
     bool mShutDown;
+    virtual bool loadRessources(Ogre::String Cfg);
     virtual void windowResized(Ogre::RenderWindow* rw);
     virtual void windowClosed(Ogre::RenderWindow* rw);
     // Ogre::FrameListener
@@ -40,6 +40,9 @@ class SpaceFuckery:
     virtual bool mouseMoved( const OIS::MouseEvent &arg );
     virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
     virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    virtual void createGUI(void);
     virtual void createScene(void);
     virtual bool initApp(void);
+    virtual bool startRendering(void);
+    virtual bool quit(const CEGUI::EventArgs &e);
 };

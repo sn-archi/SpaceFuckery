@@ -53,6 +53,29 @@ SpaceFuckery::~SpaceFuckery()
   delete mRoot;
 }
 
+// Resource configuration loader
+bool SpaceFuckery::loadRessources(Ogre::String Cfg)
+{
+  Ogre::ConfigFile cf;
+  cf.load(Cfg);
+
+  Ogre::String name, locType, secName;
+  Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
+  while (secIt.hasMoreElements())
+  {
+    secName = secIt.peekNextKey();
+    Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
+    Ogre::ConfigFile::SettingsMultiMap::iterator it;
+    for (it = settings->begin(); it != settings->end(); ++it)
+    {
+      locType = it->first;
+      name = it->second;
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType, secName);
+    }
+  }
+  return true;
+}
+
 //Adjust mouse clipping area
 void SpaceFuckery::windowResized(Ogre::RenderWindow* rw)
 {
@@ -94,8 +117,8 @@ void SpaceFuckery::createFrameListener(void)
   pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
   mInputManager = OIS::InputManager::createInputSystem( pl );
-  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
-  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
+  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, false ));
+  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, false ));
   //Set initial mouse clipping size
   windowResized(mWindow);
 
@@ -110,7 +133,7 @@ bool SpaceFuckery::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return false;
 
   if(mShutDown)
-      return false;
+    return false;
 
   //Need to capture/update each device
   mKeyboard->capture();
@@ -165,29 +188,14 @@ bool SpaceFuckery::initApp(void)
 
   mRoot = new Ogre::Root(mPluginsCfg);
 
-  Ogre::ConfigFile cf;
-  cf.load(mResourcesCfg);
-
-  Ogre::String name, locType, secName;
-  Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
-  while (secIt.hasMoreElements())
-  {
-    secName = secIt.peekNextKey();
-    Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
-    Ogre::ConfigFile::SettingsMultiMap::iterator it;
-    for (it = settings->begin(); it != settings->end(); ++it)
-    {
-      locType = it->first;
-      name = it->second;
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType, secName);
-    }
-  }
+  SpaceFuckery::loadRessources(mResourcesCfg);
 
   if(!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
     return false;
 
-  mWindow = mRoot->initialise(true, "SpaceFuckery Render Window");
-  Ogre::StringVector rg = Ogre::ResourceGroupManager::getSingleton().getResourceGroups();
+  mWindow = mRoot->initialise(true, "SpaceFuckery");
+
+  SpaceFuckery::createFrameListener();
 
   mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
   CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
@@ -195,9 +203,12 @@ bool SpaceFuckery::initApp(void)
   CEGUI::Scheme::setDefaultResourceGroup("Schemes");
   CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
   CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
-void SpaceFuckery::createScene(void)
+void SpaceFuckery::createGUI(void)
 {
   CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
   CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
@@ -208,18 +219,11 @@ void SpaceFuckery::createScene(void)
   quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
   sheet->addChild(quit);
   CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
+  quit->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
 }
 
-bool SpaceFuckery::go()
+void SpaceFuckery::createScene(void)
 {
-  std::cout << "*** Initializing SpaceFuckery ***";
-  SpaceFuckery::initApp();
-  std::cout << "*** Creating SpaceFuckery's main scene ***";
-  SpaceFuckery::createScene();
-
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
   Ogre::SceneManager* mSceneMgr;
   mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
@@ -247,13 +251,34 @@ bool SpaceFuckery::go()
 
   Ogre::Light* light = mSceneMgr->createLight("MainLight");
   light->setPosition(20, 80, 50);
+}
 
-  mRoot->startRendering();
+bool SpaceFuckery::startRendering(void)
+{
+  //  std::cout << "Starting the rendering loop";
+  while(true)
+  {
+    //    std::cout << "Looping...";
+    Ogre::WindowEventUtilities::messagePump();
+    //    std::cout << "WindowEventUtilities::messagePump()";
+    if(!mRoot->renderOneFrame()) return false;
+    //    std::cout << "mRoot->renderOneFrame()";
+  }
+}
+
+bool SpaceFuckery::go()
+{
+  SpaceFuckery::initApp();
+  SpaceFuckery::createGUI();
+  SpaceFuckery::createScene();
+  SpaceFuckery::startRendering();
   return true;
 }
 
 bool SpaceFuckery::quit(const CEGUI::EventArgs &e)
 {
+  mShutDown = true;
+  std::cout << "initiating shutdown";
   return true;
 }
 
