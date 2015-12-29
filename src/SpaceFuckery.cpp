@@ -21,13 +21,10 @@ CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
   {
     case OIS::MB_Left:
       return CEGUI::LeftButton;
-
     case OIS::MB_Right:
       return CEGUI::RightButton;
-
     case OIS::MB_Middle:
       return CEGUI::MiddleButton;
-
     default:
       return CEGUI::LeftButton;
   }
@@ -117,8 +114,14 @@ void SpaceFuckery::createFrameListener(void)
   pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
   mInputManager = OIS::InputManager::createInputSystem( pl );
-  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, false ));
-  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, false ));
+  mKeyboard = static_cast<OIS::Keyboard*>(
+                mInputManager->createInputObject( OIS::OISKeyboard, true ));
+  mMouse = static_cast<OIS::Mouse*>(
+             mInputManager->createInputObject( OIS::OISMouse, true ));
+
+  mMouse->setEventCallback(this);
+  mKeyboard->setEventCallback(this);
+
   //Set initial mouse clipping size
   windowResized(mWindow);
 
@@ -139,9 +142,6 @@ bool SpaceFuckery::frameRenderingQueued(const Ogre::FrameEvent& evt)
   mKeyboard->capture();
   mMouse->capture();
 
-  if(mKeyboard->isKeyDown(OIS::KC_ESCAPE))
-    return false;
-
   return true;
 }
 
@@ -150,6 +150,10 @@ bool SpaceFuckery::keyPressed( const OIS::KeyEvent &arg )
   CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
   context.injectKeyDown((CEGUI::Key::Scan)arg.key);
   context.injectChar((CEGUI::Key::Scan)arg.text);
+  if (arg.key == OIS::KC_ESCAPE)
+  {
+    mShutDown = true;
+  }
   return true;
 }
 
@@ -181,22 +185,8 @@ bool SpaceFuckery::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID
   return true;
 }
 
-bool SpaceFuckery::initApp(void)
+void SpaceFuckery::createGUI(void)
 {
-  mResourcesCfg = "etc/resources.cfg";
-  mPluginsCfg = "etc/plugins.cfg";
-
-  mRoot = new Ogre::Root(mPluginsCfg);
-
-  SpaceFuckery::loadRessources(mResourcesCfg);
-
-  if(!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
-    return false;
-
-  mWindow = mRoot->initialise(true, "SpaceFuckery");
-
-  SpaceFuckery::createFrameListener();
-
   mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
   CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
   CEGUI::Font::setDefaultResourceGroup("Fonts");
@@ -204,12 +194,6 @@ bool SpaceFuckery::initApp(void)
   CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
   CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
 
-  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-}
-
-void SpaceFuckery::createGUI(void)
-{
   CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
   CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
   CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
@@ -219,7 +203,8 @@ void SpaceFuckery::createGUI(void)
   quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
   sheet->addChild(quit);
   CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
-  quit->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
+  quit->subscribeEvent(CEGUI::PushButton::EventClicked,
+                       CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
 }
 
 void SpaceFuckery::createScene(void)
@@ -283,46 +268,9 @@ bool SpaceFuckery::go()
 
   SpaceFuckery::createScene();
 
-  Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
-  OIS::ParamList pl;
-  size_t windowHnd = 0;
-  std::ostringstream windowHndStr;
+  SpaceFuckery::createFrameListener();
 
-  mWindow->getCustomAttribute("WINDOW", &windowHnd);
-  windowHndStr << windowHnd;
-  pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-
-  mInputManager = OIS::InputManager::createInputSystem( pl );
-  mKeyboard = static_cast<OIS::Keyboard*>(
-    mInputManager->createInputObject( OIS::OISKeyboard, false ));
-  mMouse = static_cast<OIS::Mouse*>(
-    mInputManager->createInputObject( OIS::OISMouse, false ));
-
-  //Set initial mouse clipping size
-  windowResized(mWindow);
-
-  mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-  CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
-  CEGUI::Font::setDefaultResourceGroup("Fonts");
-  CEGUI::Scheme::setDefaultResourceGroup("Schemes");
-  CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
-  CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
-
-  CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
-  CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
-  CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
-  CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
-  CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "CEGUIDemo/QuitButton");
-  quit->setText("Quit");
-  quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
-  sheet->addChild(quit);
-  CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
-  quit->subscribeEvent(CEGUI::PushButton::EventClicked,
-                       CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
-
-  //Register as a Window listener
-  Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
-  mRoot->addFrameListener(this);
+  SpaceFuckery::createGUI();
 
   SpaceFuckery::startRendering();
   return true;
@@ -331,7 +279,6 @@ bool SpaceFuckery::go()
 bool SpaceFuckery::quit(const CEGUI::EventArgs &e)
 {
   mShutDown = true;
-  std::cout << "initiating shutdown";
   return true;
 }
 

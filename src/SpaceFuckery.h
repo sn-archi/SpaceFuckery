@@ -11,7 +11,9 @@
 
 class SpaceFuckery:
     public Ogre::WindowEventListener,
-    public Ogre::FrameListener
+    public Ogre::FrameListener,
+    public OIS::KeyListener,
+    public OIS::MouseListener
 {
   public:
     SpaceFuckery();
@@ -42,7 +44,6 @@ class SpaceFuckery:
     virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
     virtual void createGUI(void);
     virtual void createScene(void);
-    virtual bool initApp(void);
     virtual bool startRendering(void);
     virtual bool quit(const CEGUI::EventArgs &e);
 };
