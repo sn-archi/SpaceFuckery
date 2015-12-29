@@ -224,18 +224,19 @@ void SpaceFuckery::createGUI(void)
 
 void SpaceFuckery::createScene(void)
 {
+  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
   Ogre::SceneManager* mSceneMgr;
   mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
   Ogre::Camera* mCamera;
   mCamera = mSceneMgr->createCamera("MainCam");
-
   mCamera->setPosition(0, 0, 80);
   mCamera->lookAt(0, 0, -300);
   mCamera->setNearClipDistance(5);
 
   Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-
   vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
 
   mCamera->setAspectRatio(
@@ -268,9 +269,61 @@ bool SpaceFuckery::startRendering(void)
 
 bool SpaceFuckery::go()
 {
-  SpaceFuckery::initApp();
-  SpaceFuckery::createGUI();
+  mResourcesCfg = "etc/resources.cfg";
+  mPluginsCfg = "etc/plugins.cfg";
+
+  mRoot = new Ogre::Root(mPluginsCfg);
+
+  SpaceFuckery::loadRessources(mResourcesCfg);
+
+  if(!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
+    return false;
+
+  mWindow = mRoot->initialise(true, "SpaceFuckery");
+
   SpaceFuckery::createScene();
+
+  Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+  OIS::ParamList pl;
+  size_t windowHnd = 0;
+  std::ostringstream windowHndStr;
+
+  mWindow->getCustomAttribute("WINDOW", &windowHnd);
+  windowHndStr << windowHnd;
+  pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+
+  mInputManager = OIS::InputManager::createInputSystem( pl );
+  mKeyboard = static_cast<OIS::Keyboard*>(
+    mInputManager->createInputObject( OIS::OISKeyboard, false ));
+  mMouse = static_cast<OIS::Mouse*>(
+    mInputManager->createInputObject( OIS::OISMouse, false ));
+
+  //Set initial mouse clipping size
+  windowResized(mWindow);
+
+  mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+  CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
+  CEGUI::Font::setDefaultResourceGroup("Fonts");
+  CEGUI::Scheme::setDefaultResourceGroup("Schemes");
+  CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
+  CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+
+  CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
+  CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+  CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
+  CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
+  CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "CEGUIDemo/QuitButton");
+  quit->setText("Quit");
+  quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+  sheet->addChild(quit);
+  CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
+  quit->subscribeEvent(CEGUI::PushButton::EventClicked,
+                       CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
+
+  //Register as a Window listener
+  Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
+  mRoot->addFrameListener(this);
+
   SpaceFuckery::startRendering();
   return true;
 }
