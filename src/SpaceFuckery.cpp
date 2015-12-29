@@ -197,13 +197,11 @@ void SpaceFuckery::createGUI(void)
   CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
   CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
   CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
-  CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
-  CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "CEGUIDemo/QuitButton");
-  quit->setText("Quit");
-  quit->setSize(CEGUI::USize(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
-  sheet->addChild(quit);
-  CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
-  quit->subscribeEvent(CEGUI::PushButton::EventClicked,
+  CEGUI::Window* flightWin = wmgr.loadLayoutFromFile("flight.layout");
+  CEGUI::Window *quitButton = flightWin->getChild("QuitButton");
+  CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(flightWin);
+
+  quitButton->subscribeEvent(CEGUI::PushButton::EventClicked,
                        CEGUI::Event::Subscriber(&SpaceFuckery::quit, this));
 }
 
@@ -267,11 +265,8 @@ bool SpaceFuckery::go()
   mWindow = mRoot->initialise(true, "SpaceFuckery");
 
   SpaceFuckery::createScene();
-
   SpaceFuckery::createFrameListener();
-
   SpaceFuckery::createGUI();
-
   SpaceFuckery::startRendering();
   return true;
 }
