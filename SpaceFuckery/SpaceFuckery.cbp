@@ -45,11 +45,20 @@
 			<Add directory="/bin/Debug" />
 			<Add directory="/bin/Release" />
 		</Linker>
+		<Unit filename="SpaceFuckery.cpp" />
+		<Unit filename="SpaceFuckery.h" />
+		<Unit filename="etc/plugins.cfg" />
+		<Unit filename="etc/resources.cfg" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<lib_finder disable_auto="1" />
+			<lib_finder disable_auto="1">
+				<lib name="OGRE" />
+				<lib name="CEGUI-0" />
+				<lib name="CEGUI-0-OGRE" />
+				<lib name="OIS" />
+			</lib_finder>
 			<debugger />
 		</Extensions>
 	</Project>
