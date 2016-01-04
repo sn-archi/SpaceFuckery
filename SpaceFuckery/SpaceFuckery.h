@@ -15,7 +15,6 @@
 #include <OgreWindowEventUtilities.h>
 #include "OgreRenderWindow.h"
 
-
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/Ogre/Renderer.h>
 
