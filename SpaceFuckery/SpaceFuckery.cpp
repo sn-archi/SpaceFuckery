@@ -38,6 +38,7 @@ SpaceFuckery::SpaceFuckery()
     mInputManager (0),
     mMouse (0),
     mKeyboard (0),
+    mRenderer (0),
     mShutDown (false)
 {
 }
