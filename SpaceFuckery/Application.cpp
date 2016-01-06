@@ -1,12 +1,13 @@
 #include "Application.h"
-#include "frameListener.h"
+#include "FrameListener.h"
+#include "WindowEventListener.h"
 
 #include <OgreException.h>
 #include <OgreConfigFile.h>
-#include "OgreRenderWindow.h"
+#include <OgreRenderWindow.h>
 #include <OgreSceneManager.h>
 #include <OgreCamera.h>
-#include "OgreViewport.h"
+#include <OgreViewport.h>
 #include <OgreEntity.h>
 #include <OgreWindowEventUtilities.h>
 #include <OISEvents.h>
@@ -35,18 +36,10 @@ namespace SpaceFuckery
 {
   template<> SpaceFuckery::Application* Ogre::Singleton<SpaceFuckery::Application>::msSingleton = 0;
 
-  Application* Application::getSingletonPtr(void)
-  {
-      return msSingleton;
-  }
-  Application& Application::getSingleton(void)
-  {
-      assert( msSingleton );  return ( *msSingleton );
-  }
-
   Application::Application()
     : mRoot (0),
-      mFrameListener(0),
+      mFrameListener (0),
+      mWindowEventListener (0),
       mWindow (0),
       mResourcesCfg (Ogre::StringUtil::BLANK),
       mPluginsCfg (Ogre::StringUtil::BLANK),
@@ -61,8 +54,8 @@ namespace SpaceFuckery
   Application::~Application()
   {
     //Remove ourself as a Window listener
-    Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, this);
-    windowClosed (mWindow);
+    Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, mWindowEventListener);
+    mWindowEventListener->windowClosed (mWindow);
     delete mRoot;
   }
 
@@ -89,35 +82,6 @@ namespace SpaceFuckery
     return true;
   }
 
-  //Adjust mouse clipping area
-  void Application::windowResized (Ogre::RenderWindow* rw)
-  {
-    unsigned int width, height, depth;
-    int left, top;
-    rw->getMetrics (width, height, depth, left, top);
-
-    const OIS::MouseState &ms = mMouse->getMouseState();
-    ms.width = width;
-    ms.height = height;
-  }
-
-  //Unattach OIS before window shutdown (very important under Linux)
-  void Application::windowClosed (Ogre::RenderWindow* rw)
-  {
-    //Only close for window that created OIS (the main window in these demos)
-    if (rw == mWindow)
-      {
-        if (mInputManager)
-          {
-            mInputManager->destroyInputObject ( mMouse );
-            mInputManager->destroyInputObject ( mKeyboard );
-
-            OIS::InputManager::destroyInputSystem (mInputManager);
-            mInputManager = 0;
-          }
-      }
-  }
-
   void Application::createFrameListener (void)
   {
     Ogre::LogManager::getSingletonPtr()->logMessage ("*** Initializing OIS ***");
@@ -138,12 +102,16 @@ namespace SpaceFuckery
     mMouse->setEventCallback (this);
     mKeyboard->setEventCallback (this);
 
+    mWindowEventListener = new WindowEventListener;
     //Set initial mouse clipping size
-    windowResized (mWindow);
+    mWindowEventListener->windowResized (mWindow);
 
-    //Register as a Window listener
-    Ogre::WindowEventUtilities::addWindowEventListener (mWindow, this);
-    mFrameListener = new SpaceFuckery::FrameListener;
+    //Register a Window listener for the main window
+    std::cout << "WindowEventListener...\n";
+    Ogre::WindowEventUtilities::addWindowEventListener (mWindow, mWindowEventListener);
+
+    std::cout << "FrameListener...\n";
+    mFrameListener = new FrameListener;
     mRoot->addFrameListener (mFrameListener);
   }
 
@@ -279,23 +247,28 @@ namespace SpaceFuckery
     return true;
   }
 
-  Ogre::RenderWindow* Application::getWindow(void)
+  Ogre::RenderWindow* Application::getWindow (void)
   {
     return mWindow;
   }
 
-  bool Application::getShutDown(void)
+  bool Application::getShutDown (void)
   {
     return mShutDown;
   }
 
-  OIS::Mouse* Application::getMouse(void)
+  OIS::Mouse* Application::getMouse (void)
   {
     return mMouse;
   }
 
-  OIS::Keyboard* Application::getKeyboard(void)
+  OIS::Keyboard* Application::getKeyboard (void)
   {
     return mKeyboard;
+  }
+
+  OIS::InputManager* Application::getInputManager (void)
+  {
+    return mInputManager;
   }
 }

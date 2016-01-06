@@ -4,7 +4,7 @@
 /******************************************
 *                                         *
 * Project: SpaceFuckery                   *
-* Function:                               *
+* Interface: FrameListener                *
 *                                         *
 *   Copyright 2015 - Marc-Olivier Barre   *
 *           All rights reserved           *

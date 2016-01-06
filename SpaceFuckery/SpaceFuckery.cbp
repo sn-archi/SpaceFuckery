@@ -51,10 +51,12 @@
 		</Linker>
 		<Unit filename="Application.cpp" />
 		<Unit filename="Application.h" />
+		<Unit filename="FrameListener.cpp" />
+		<Unit filename="FrameListener.h" />
+		<Unit filename="WindowEventListener.cpp" />
+		<Unit filename="WindowEventListener.h" />
 		<Unit filename="etc/plugins.cfg" />
 		<Unit filename="etc/resources.cfg" />
-		<Unit filename="frameListener.cpp" />
-		<Unit filename="frameListener.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

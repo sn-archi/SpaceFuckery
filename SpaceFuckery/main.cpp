@@ -3,12 +3,12 @@
 extern "C" {
   int main (int argc, char *argv[])
   {
-    // Create application object
-    SpaceFuckery::Application app;
+    // Create the  singleton application object
+    new SpaceFuckery::Application;
 
     try
       {
-        app.go();
+        SpaceFuckery::Application::getSingleton().go();
       }
     catch (Ogre::Exception& e)
       {

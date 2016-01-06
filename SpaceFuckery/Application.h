@@ -15,12 +15,14 @@
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
 #include <OISMouse.h>
-#include <OgreWindowEventUtilities.h>
 #include <OgreSingleton.h>
 #include <OgreRenderWindow.h>
 
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/Ogre/Renderer.h>
+
+#include "FrameListener.h"
+#include "WindowEventListener.h"
 
 namespace SpaceFuckery {class Application;}
 
@@ -30,13 +32,10 @@ namespace SpaceFuckery
 {
   class Application:
     public Ogre::Singleton<Application>,
-    public Ogre::WindowEventListener,
     public OIS::KeyListener,
     public OIS::MouseListener
   {
     public:
-      static Application& getSingleton(void);
-      static Application* getSingletonPtr(void);
       Application();
       virtual ~Application();
       virtual bool go();
@@ -44,10 +43,12 @@ namespace SpaceFuckery
       virtual bool getShutDown(void);
       virtual OIS::Mouse* getMouse(void);
       virtual OIS::Keyboard* getKeyboard(void);
+      virtual OIS::InputManager* getInputManager(void);
 
     private:
       Ogre::Root* mRoot;
-      Ogre::FrameListener* mFrameListener;
+      SpaceFuckery::FrameListener* mFrameListener;
+      SpaceFuckery::WindowEventListener* mWindowEventListener;
       Ogre::RenderWindow* mWindow;
       Ogre::String mResourcesCfg;
       Ogre::String mPluginsCfg;
@@ -57,9 +58,7 @@ namespace SpaceFuckery
       CEGUI::OgreRenderer* mRenderer;
       bool mShutDown;
       virtual bool loadRessources (Ogre::String Cfg);
-      virtual void windowResized (Ogre::RenderWindow* rw);
-      virtual void windowClosed (Ogre::RenderWindow* rw);
-      // Ogre::FrameListener
+      // SpaceFuckery::FrameListener
       virtual void createFrameListener (void);
       // OIS::KeyListener
       virtual bool keyPressed ( const OIS::KeyEvent &arg );
