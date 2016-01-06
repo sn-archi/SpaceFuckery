@@ -1,10 +1,10 @@
-#include "SpaceFuckery.h"
+#include "Application.h"
 
 extern "C" {
   int main (int argc, char *argv[])
   {
     // Create application object
-    SpaceFuckery app;
+    SpaceFuckery::Application app;
 
     try
       {
