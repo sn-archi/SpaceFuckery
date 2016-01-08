@@ -12,7 +12,6 @@
 ******************************************/
 
 #include <OgreWindowEventUtilities.h>
-#include "Application.h"
 
 namespace SpaceFuckery
 {

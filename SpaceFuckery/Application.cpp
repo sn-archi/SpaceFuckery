@@ -14,7 +14,6 @@
 #include <OgreCamera.h>
 #include <OgreViewport.h>
 #include <OgreEntity.h>
-#include <OgreWindowEventUtilities.h>
 #include <OgreStringVector.h>
 
 #include <OISEvents.h>
