@@ -8,7 +8,6 @@
 *                                         *
 ******************************************/
 
-#include <OISMouse.h>
 #include <CEGUI/CEGUI.h>
 
 #include "Application.h"

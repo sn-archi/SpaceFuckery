@@ -14,7 +14,6 @@
 #include <OgreRoot.h>
 #include <OgreSingleton.h>
 #include <OgreRenderWindow.h>
-#include <OISInputManager.h>
 #include <OISMouse.h>
 #include <OISKeyboard.h>
 #include <CEGUI/RendererModules/Ogre/Renderer.h>
