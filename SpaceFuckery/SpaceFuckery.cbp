@@ -53,6 +53,10 @@
 		<Unit filename="Application.h" />
 		<Unit filename="FrameListener.cpp" />
 		<Unit filename="FrameListener.h" />
+		<Unit filename="KeyListener.cpp" />
+		<Unit filename="KeyListener.h" />
+		<Unit filename="MouseListener.cpp" />
+		<Unit filename="MouseListener.h" />
 		<Unit filename="WindowEventListener.cpp" />
 		<Unit filename="WindowEventListener.h" />
 		<Unit filename="etc/plugins.cfg" />

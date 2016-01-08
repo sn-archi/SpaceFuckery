@@ -1,6 +1,12 @@
-#include "Application.h"
-#include "FrameListener.h"
-#include "WindowEventListener.h"
+/******************************************
+*                                         *
+* Project: SpaceFuckery                   *
+* Singleton: Application                  *
+*                                         *
+*   Copyright 2015 - Marc-Olivier Barre   *
+*           All rights reserved           *
+*                                         *
+******************************************/
 
 #include <OgreException.h>
 #include <OgreConfigFile.h>
@@ -10,27 +16,20 @@
 #include <OgreViewport.h>
 #include <OgreEntity.h>
 #include <OgreWindowEventUtilities.h>
+#include <OgreStringVector.h>
+
 #include <OISEvents.h>
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
-#include <OgreStringVector.h>
+#include <CEGUI/CEGUI.h>
 
-CEGUI::MouseButton convertButton (OIS::MouseButtonID buttonID)
-{
-  switch (buttonID)
-    {
-    case OIS::MB_Left:
-      return CEGUI::LeftButton;
-    case OIS::MB_Right:
-      return CEGUI::RightButton;
-    case OIS::MB_Middle:
-      return CEGUI::MiddleButton;
-    default:
-      return CEGUI::LeftButton;
-    }
-}
+#include "Application.h"
+#include "FrameListener.h"
+#include "WindowEventListener.h"
+#include "MouseListener.h"
+#include "KeyListener.h"
 
 namespace SpaceFuckery
 {
@@ -40,12 +39,14 @@ namespace SpaceFuckery
     : mRoot (0),
       mFrameListener (0),
       mWindowEventListener (0),
+      mMouseListener (0),
+      mKeyListener (0),
+      mMouse (0),
+      mKeyboard (0),
       mWindow (0),
       mResourcesCfg (Ogre::StringUtil::BLANK),
       mPluginsCfg (Ogre::StringUtil::BLANK),
       mInputManager (0),
-      mMouse (0),
-      mKeyboard (0),
       mRenderer (0),
       mShutDown (false)
   {
@@ -82,106 +83,62 @@ namespace SpaceFuckery
     return true;
   }
 
-  void Application::createFrameListener (void)
+  void Application::createListeners (void)
   {
-    Ogre::LogManager::getSingletonPtr()->logMessage ("*** Initializing OIS ***");
     OIS::ParamList pl;
     size_t windowHnd = 0;
     std::ostringstream windowHndStr;
+    mMouseListener = new SpaceFuckery::MouseListener;
+    mKeyListener = new SpaceFuckery::KeyListener;
+    mWindowEventListener = new WindowEventListener;
+    mFrameListener = new FrameListener;
 
     mWindow->getCustomAttribute ("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert (std::make_pair (std::string ("WINDOW"), windowHndStr.str() ) );
 
+    // Setup our input listeners
     mInputManager = OIS::InputManager::createInputSystem ( pl );
-    mKeyboard = static_cast<OIS::Keyboard*> (
-                  mInputManager->createInputObject ( OIS::OISKeyboard, true ) );
-    mMouse = static_cast<OIS::Mouse*> (
-               mInputManager->createInputObject ( OIS::OISMouse, true ) );
+    mKeyboard = static_cast<OIS::Keyboard*> (mInputManager->createInputObject (OIS::OISKeyboard, true));
+    mMouse = static_cast<OIS::Mouse*> (mInputManager->createInputObject (OIS::OISMouse, true));
+    mMouse->setEventCallback (mMouseListener);
+    mKeyboard->setEventCallback (mKeyListener);
 
-    mMouse->setEventCallback (this);
-    mKeyboard->setEventCallback (this);
-
-    mWindowEventListener = new WindowEventListener;
     //Set initial mouse clipping size
     mWindowEventListener->windowResized (mWindow);
 
-    //Register a Window listener for the main window
-    std::cout << "WindowEventListener...\n";
+    //Register a window listener for the main window
     Ogre::WindowEventUtilities::addWindowEventListener (mWindow, mWindowEventListener);
 
-    std::cout << "FrameListener...\n";
-    mFrameListener = new FrameListener;
+    //Register a frame listener
     mRoot->addFrameListener (mFrameListener);
-  }
-
-  bool Application::keyPressed ( const OIS::KeyEvent &arg )
-  {
-    CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
-    context.injectKeyDown ( (CEGUI::Key::Scan) arg.key);
-    context.injectChar ( (CEGUI::Key::Scan) arg.text);
-    if (arg.key == OIS::KC_ESCAPE)
-      {
-        mShutDown = true;
-      }
-    return true;
-  }
-
-  bool Application::keyReleased ( const OIS::KeyEvent &arg )
-  {
-    CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp ( (CEGUI::Key::Scan) arg.key);
-    return true;
-  }
-
-  bool Application::mouseMoved ( const OIS::MouseEvent &arg )
-  {
-    CEGUI::System &sys = CEGUI::System::getSingleton();
-    sys.getDefaultGUIContext().injectMouseMove (arg.state.X.rel, arg.state.Y.rel);
-    // Scroll wheel.
-    if (arg.state.Z.rel)
-      sys.getDefaultGUIContext().injectMouseWheelChange (arg.state.Z.rel / 120.0f);
-    return true;
-  }
-
-  bool Application::mousePressed ( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-  {
-    CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonDown (convertButton (id) );
-    return true;
-  }
-
-  bool Application::mouseReleased ( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-  {
-    CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp (convertButton (id) );
-    return true;
   }
 
   void Application::createGUI (void)
   {
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-    CEGUI::ImageManager::setImagesetDefaultResourceGroup ("Imagesets");
-    CEGUI::Font::setDefaultResourceGroup ("Fonts");
-    CEGUI::Scheme::setDefaultResourceGroup ("Schemes");
-    CEGUI::WidgetLookManager::setDefaultResourceGroup ("LookNFeel");
-    CEGUI::WindowManager::setDefaultResourceGroup ("Layouts");
+    CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
+    CEGUI::Font::setDefaultResourceGroup("Fonts");
+    CEGUI::Scheme::setDefaultResourceGroup("Schemes");
+    CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
+    CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
 
     CEGUI::SchemeManager::getSingleton().createFromFile ("TaharezLook.scheme");
-    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage ("TaharezLook/MouseArrow");
-    CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
-    CEGUI::Window* flightWin = wmgr.loadLayoutFromFile ("flight.layout");
-    CEGUI::Window *quitButton = flightWin->getChild ("QuitButton");
+    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+    CEGUI::Window* flightWin = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("flight.layout");
+    CEGUI::Window* quitButton = flightWin->getChild ("QuitButton");
     CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow (flightWin);
 
-    quitButton->subscribeEvent (CEGUI::PushButton::EventClicked,
-                                CEGUI::Event::Subscriber (&Application::quit, this) );
+    quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Application::quit, this));
   }
 
   void Application::createScene (void)
   {
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps (5);
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     Ogre::SceneManager* mSceneMgr;
-    mSceneMgr = mRoot->createSceneManager (Ogre::ST_GENERIC);
+    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera ("MainCam");
@@ -209,14 +166,10 @@ namespace SpaceFuckery
 
   bool Application::startRendering (void)
   {
-    //  std::cout << "Starting the rendering loop";
     while (true)
       {
-        //    std::cout << "Looping...";
         Ogre::WindowEventUtilities::messagePump();
-        //    std::cout << "WindowEventUtilities::messagePump()";
         if (!mRoot->renderOneFrame() ) return false;
-        //    std::cout << "mRoot->renderOneFrame()";
       }
   }
 
@@ -235,7 +188,7 @@ namespace SpaceFuckery
     mWindow = mRoot->initialise (true, "SpaceFuckery");
 
     Application::createScene();
-    Application::createFrameListener();
+    Application::createListeners();
     Application::createGUI();
     Application::startRendering();
     return true;
@@ -255,6 +208,11 @@ namespace SpaceFuckery
   bool Application::getShutDown (void)
   {
     return mShutDown;
+  }
+
+  void Application::setShutDown (bool value)
+  {
+    mShutDown = value;
   }
 
   OIS::Mouse* Application::getMouse (void)
