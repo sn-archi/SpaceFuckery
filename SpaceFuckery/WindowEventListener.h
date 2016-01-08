@@ -19,7 +19,6 @@ namespace SpaceFuckery
     public Ogre::WindowEventListener
   {
     public:
-      WindowEventListener();
       virtual void windowResized (Ogre::RenderWindow* rw);
       virtual void windowClosed (Ogre::RenderWindow* rw);
   };

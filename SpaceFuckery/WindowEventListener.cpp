@@ -13,9 +13,6 @@
 
 namespace SpaceFuckery
 {
-  WindowEventListener::WindowEventListener()
-  {
-  }
   //Adjust mouse clipping area
   void WindowEventListener::windowResized (Ogre::RenderWindow* rw)
   {
