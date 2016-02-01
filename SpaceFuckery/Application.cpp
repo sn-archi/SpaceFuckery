@@ -137,8 +137,8 @@ namespace SpaceFuckery
 
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera ("MainCam");
-    mCamera->setPosition (0, 0, 80);
-    mCamera->lookAt (0, 0, -300);
+    mCamera->setPosition (4, 2, 8);
+    mCamera->lookAt (0, 0, 0);
     mCamera->setNearClipDistance (5);
 
     Ogre::Viewport* vp = mWindow->addViewport (mCamera);
@@ -148,7 +148,7 @@ namespace SpaceFuckery
       Ogre::Real (vp->getActualWidth() ) /
       Ogre::Real (vp->getActualHeight() ) );
 
-    Ogre::Entity* ogreEntity = mSceneMgr->createEntity ("ogrehead.mesh");
+    Ogre::Entity* ogreEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
     Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
     ogreNode->attachObject (ogreEntity);

@@ -20,7 +20,6 @@
 					<Add option="-Wall" />
 					<Add option="-ansi" />
 					<Add option="-g" />
-					<Add option="-Wno-unused" />
 				</Compiler>
 				<Linker>
 					<Add library="boost_system" />
@@ -34,18 +33,27 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-ansi" />
+					<Add option="-Wno-unused" />
+					<Add option="-Wno-long-long" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="OgreMain" />
-					<Add library="OIS" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-ansi" />
+			<Add option="-Wno-unused" />
+			<Add option="-Wno-long-long" />
 		</Compiler>
 		<Linker>
+			<Add library="boost_system" />
 			<Add directory="/bin/Debug" />
 			<Add directory="/bin/Release" />
 		</Linker>
@@ -66,8 +74,8 @@
 			<code_completion />
 			<envvars />
 			<lib_finder disable_auto="1">
-				<lib name="CEGUI-0-OGRE" />
 				<lib name="OIS" />
+				<lib name="CEGUI-0-OGRE" />
 			</lib_finder>
 			<debugger />
 		</Extensions>
