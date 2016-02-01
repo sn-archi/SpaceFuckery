@@ -137,9 +137,9 @@ namespace SpaceFuckery
 
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera ("MainCam");
-    mCamera->setPosition (4, 2, 8);
+    mCamera->setPosition (2, 2, 6);
     mCamera->lookAt (0, 0, 0);
-    mCamera->setNearClipDistance (5);
+    mCamera->setNearClipDistance (1);
 
     Ogre::Viewport* vp = mWindow->addViewport (mCamera);
     vp->setBackgroundColour (Ogre::ColourValue (0, 0, 0) );
