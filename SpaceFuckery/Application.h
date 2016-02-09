@@ -22,6 +22,7 @@
 #include "WindowEventListener.h"
 #include "MouseListener.h"
 #include "KeyListener.h"
+#include "physicsEngine.h"
 
 namespace SpaceFuckery {class Application;}
 
@@ -37,11 +38,13 @@ namespace SpaceFuckery
       virtual ~Application();
       virtual bool go();
       virtual Ogre::RenderWindow* getWindow(void);
+      virtual Ogre::SceneManager* getSceneMgr(void);
       virtual bool getShutDown(void);
       virtual void setShutDown(bool value);
       virtual OIS::Mouse* getMouse(void);
       virtual OIS::Keyboard* getKeyboard(void);
       virtual OIS::InputManager* getInputManager(void);
+      virtual SpaceFuckery::physicsEngine* getPhysicsEngine(void);
 
     private:
       Ogre::Root* mRoot;
@@ -52,10 +55,12 @@ namespace SpaceFuckery
       OIS::Mouse* mMouse;
       OIS::Keyboard* mKeyboard;
       Ogre::RenderWindow* mWindow;
+      Ogre::SceneManager* mSceneMgr;
       Ogre::String mResourcesCfg;
       Ogre::String mPluginsCfg;
       OIS::InputManager* mInputManager;
       CEGUI::OgreRenderer* mRenderer;
+      SpaceFuckery::physicsEngine* mPhysicsEngine;
       bool mShutDown;
       virtual bool loadRessources (Ogre::String Cfg);
       // SpaceFuckery::FrameListener

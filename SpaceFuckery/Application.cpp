@@ -39,12 +39,15 @@ namespace SpaceFuckery
       mMouse (0),
       mKeyboard (0),
       mWindow (0),
+      mSceneMgr (0),
       mResourcesCfg (Ogre::StringUtil::BLANK),
       mPluginsCfg (Ogre::StringUtil::BLANK),
       mInputManager (0),
       mRenderer (0),
+      mPhysicsEngine (0),
       mShutDown (false)
   {
+    mPhysicsEngine = new SpaceFuckery::physicsEngine();
   }
 
   Application::~Application()
@@ -132,9 +135,7 @@ namespace SpaceFuckery
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-    Ogre::SceneManager* mSceneMgr;
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
-
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera ("MainCam");
     mCamera->setPosition (2, 2, 6);
@@ -148,15 +149,37 @@ namespace SpaceFuckery
       Ogre::Real (vp->getActualWidth() ) /
       Ogre::Real (vp->getActualHeight() ) );
 
-    Ogre::Entity* ogreEntity = mSceneMgr->createEntity ("Suzanne.mesh");
+    Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
-    Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-    ogreNode->attachObject (ogreEntity);
+    Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
+    suzzyNode->attachObject (suzzyEntity);
 
     mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5) );
 
     Ogre::Light* light = mSceneMgr->createLight ("MainLight");
+    mSceneMgr->createLight();
     light->setPosition (20, 80, 50);
+
+    // Setup some physics for our objects
+    btTransform suzzyTransform;
+    suzzyTransform.setIdentity();
+    suzzyTransform.setOrigin(btVector3(0, -50, 0));
+
+    btScalar suzzyMass(1); //the mass is 0, because the ground is immovable (static)
+    btVector3 localSuzzyInertia(0, 0, 0);
+
+    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+    btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
+
+    suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
+
+    btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo(suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
+    btRigidBody *suzzyBody = new btRigidBody(suzzyRBInfo);
+
+    suzzyBody->setUserPointer(suzzyNode);
+
+    //add the body to the dynamics world
+    mPhysicsEngine->getDynamicsWorld()->addRigidBody(suzzyBody);
   }
 
   bool Application::startRendering (void)
@@ -200,6 +223,11 @@ namespace SpaceFuckery
     return mWindow;
   }
 
+  Ogre::SceneManager* Application::getSceneMgr(void)
+  {
+    return mSceneMgr;
+  }
+
   bool Application::getShutDown (void)
   {
     return mShutDown;
@@ -223,5 +251,10 @@ namespace SpaceFuckery
   OIS::InputManager* Application::getInputManager (void)
   {
     return mInputManager;
+  }
+
+  SpaceFuckery::physicsEngine* Application::getPhysicsEngine(void)
+  {
+    return mPhysicsEngine;
   }
 }
