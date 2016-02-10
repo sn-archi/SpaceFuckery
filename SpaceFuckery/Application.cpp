@@ -152,6 +152,7 @@ namespace SpaceFuckery
     Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
     Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
+    std::cout << "Prout lol";
     suzzyNode->attachObject (suzzyEntity);
 
     mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5) );
@@ -174,12 +175,13 @@ namespace SpaceFuckery
     suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
 
     btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo(suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
-    btRigidBody *suzzyBody = new btRigidBody(suzzyRBInfo);
+    btRigidBody* suzzyBody = new btRigidBody(suzzyRBInfo);
 
     suzzyBody->setUserPointer(suzzyNode);
 
     //add the body to the dynamics world
     mPhysicsEngine->getDynamicsWorld()->addRigidBody(suzzyBody);
+    mPhysicsEngine->linkPhysicsToNode("Suzzy", suzzyBody);
   }
 
   bool Application::startRendering (void)

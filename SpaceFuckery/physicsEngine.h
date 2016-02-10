@@ -21,18 +21,21 @@
 namespace SpaceFuckery
 {
   class physicsEngine{
-    btDefaultCollisionConfiguration* collisionConfiguration;
-    btCollisionDispatcher* dispatcher;
-    btBroadphaseInterface* overlappingPairCache;
-    btSequentialImpulseConstraintSolver* solver;
-    btDiscreteDynamicsWorld* dynamicsWorld;
-    std::vector<btCollisionShape *> collisionShapes;
-    std::map<std::string, btRigidBody *> physicsAccessors;
-    int mCollisionObjectCount;
+  private:
+      btDefaultCollisionConfiguration* collisionConfiguration;
+      btCollisionDispatcher* dispatcher;
+      btBroadphaseInterface* overlappingPairCache;
+      btSequentialImpulseConstraintSolver* solver;
+      std::vector<btCollisionShape *> collisionShapes;
+      std::map<std::string, btRigidBody *> physicsAccessors;
+      int mCollisionObjectCount;
     public:
+      btDiscreteDynamicsWorld* dynamicsWorld;
       physicsEngine();
-      btDiscreteDynamicsWorld* getDynamicsWorld(void);
-      int getCollisionObjectCount(void);
+      virtual ~physicsEngine();
+      virtual btDiscreteDynamicsWorld* getDynamicsWorld(void);
+      virtual int getCollisionObjectCount(void);
+      virtual void linkPhysicsToNode(std::string nodeName, btRigidBody* rigidBody);
   };
 }
 

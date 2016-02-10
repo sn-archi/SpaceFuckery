@@ -23,6 +23,11 @@ namespace SpaceFuckery
     mCollisionObjectCount = 0;
   }
 
+  physicsEngine::~physicsEngine()
+  {
+    delete dynamicsWorld;
+  }
+
   btDiscreteDynamicsWorld* physicsEngine::getDynamicsWorld(void)
   {
     return dynamicsWorld;
@@ -31,5 +36,10 @@ namespace SpaceFuckery
   int physicsEngine::getCollisionObjectCount(void)
   {
     return mCollisionObjectCount;
+  }
+
+  void physicsEngine::linkPhysicsToNode(std::string nodeName, btRigidBody* rigidBody)
+  {
+    mCollisionObjectCount++;
   }
 }
