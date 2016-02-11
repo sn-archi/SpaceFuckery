@@ -30,27 +30,27 @@ namespace SpaceFuckery
 
   bool FrameListener::frameStarted (const Ogre::FrameEvent& evt)
   {
-//    if (Application::getSingleton().getPhysicsEngine() != NULL){
-//    Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->stepSimulation(1.0f/60.0f); //suppose you have 60 frames per second
-//
-//      for (int i = 0; i< Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
-//        btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->getCollisionObjectArray()[i];
-//        btRigidBody* body = btRigidBody::upcast(obj);
-//
-//        if (body && body->getMotionState()){
-//          btTransform trans;
-//          body->getMotionState()->getWorldTransform(trans);
-//
-//          void *userPointer = body->getUserPointer();
-//          if (userPointer) {
-//            btQuaternion orientation = trans.getRotation();
-//            Ogre::SceneNode *sceneNode = static_cast<Ogre::SceneNode *>(userPointer);
-//            sceneNode->setPosition(Ogre::Vector3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-//            sceneNode->setOrientation(Ogre::Quaternion(orientation.getW(), orientation.getX(), orientation.getY(), orientation.getZ()));
-//          }
-//        }
-//      }
-//    }
+    if (Application::getSingleton().getPhysicsEngine() != NULL){
+    Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->stepSimulation(1.0f/60.0f); //suppose you have 60 frames per second
+
+      for (int i = 0; i< Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
+        btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->getCollisionObjectArray()[i];
+        btRigidBody* body = btRigidBody::upcast(obj);
+
+        if (body && body->getMotionState()){
+          btTransform trans;
+          body->getMotionState()->getWorldTransform(trans);
+
+          void *userPointer = body->getUserPointer();
+          if (userPointer) {
+            btQuaternion orientation = trans.getRotation();
+            Ogre::SceneNode *sceneNode = static_cast<Ogre::SceneNode *>(userPointer);
+            sceneNode->setPosition(Ogre::Vector3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+            sceneNode->setOrientation(Ogre::Quaternion(orientation.getW(), orientation.getX(), orientation.getY(), orientation.getZ()));
+          }
+        }
+      }
+    }
     return true;
   }
 

@@ -26,16 +26,14 @@ namespace SpaceFuckery
       btCollisionDispatcher* dispatcher;
       btBroadphaseInterface* overlappingPairCache;
       btSequentialImpulseConstraintSolver* solver;
-      std::vector<btCollisionShape *> collisionShapes;
-      std::map<std::string, btRigidBody *> physicsAccessors;
+      btDiscreteDynamicsWorld* dynamicsWorld;
       int mCollisionObjectCount;
     public:
-      btDiscreteDynamicsWorld* dynamicsWorld;
       physicsEngine();
       virtual ~physicsEngine();
       virtual btDiscreteDynamicsWorld* getDynamicsWorld(void);
       virtual int getCollisionObjectCount(void);
-      virtual void linkPhysicsToNode(std::string nodeName, btRigidBody* rigidBody);
+      virtual void countPhysicsObject(void);
   };
 }
 

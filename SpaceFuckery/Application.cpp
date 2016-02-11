@@ -164,9 +164,9 @@ namespace SpaceFuckery
     // Setup some physics for our objects
     btTransform suzzyTransform;
     suzzyTransform.setIdentity();
-    suzzyTransform.setOrigin(btVector3(0, -50, 0));
+    suzzyTransform.setOrigin(btVector3(0, 0, 0));
 
-    btScalar suzzyMass(1); //the mass is 0, because the ground is immovable (static)
+    btScalar suzzyMass(1);
     btVector3 localSuzzyInertia(0, 0, 0);
 
     btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
@@ -181,7 +181,7 @@ namespace SpaceFuckery
 
     //add the body to the dynamics world
     mPhysicsEngine->getDynamicsWorld()->addRigidBody(suzzyBody);
-    mPhysicsEngine->linkPhysicsToNode("Suzzy", suzzyBody);
+    mPhysicsEngine->countPhysicsObject();
   }
 
   bool Application::startRendering (void)
