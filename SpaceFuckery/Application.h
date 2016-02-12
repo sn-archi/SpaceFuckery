@@ -11,12 +11,12 @@
 *                                         *
 ******************************************/
 
-#include <OgreRoot.h>
-#include <OgreSingleton.h>
-#include <OgreRenderWindow.h>
-#include <OISMouse.h>
-#include <OISKeyboard.h>
-#include <CEGUI/RendererModules/Ogre/Renderer.h>
+#include "OgreRoot.h"
+#include "OgreSingleton.h"
+#include "OgreRenderWindow.h"
+#include "OISMouse.h"
+#include "OISKeyboard.h"
+#include "CEGUI/RendererModules/Ogre/Renderer.h"
 
 #include "FrameListener.h"
 #include "WindowEventListener.h"

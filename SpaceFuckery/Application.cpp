@@ -8,17 +8,17 @@
 *                                         *
 ******************************************/
 
-#include <OgreException.h>
-#include <OgreConfigFile.h>
-#include <OgreSceneManager.h>
-#include <OgreCamera.h>
-#include <OgreViewport.h>
-#include <OgreEntity.h>
-#include <OgreStringVector.h>
+#include "OgreException.h"
+#include "OgreConfigFile.h"
+#include "OgreSceneManager.h"
+#include "OgreCamera.h"
+#include "OgreViewport.h"
+#include "OgreEntity.h"
+#include "OgreStringVector.h"
 
-#include <OISEvents.h>
+#include "OISEvents.h"
 
-#include <CEGUI/CEGUI.h>
+#include "CEGUI/CEGUI.h"
 
 #include "Application.h"
 #include "FrameListener.h"
