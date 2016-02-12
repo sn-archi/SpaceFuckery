@@ -83,7 +83,7 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<lib_finder disable_auto="1">
+			<lib_finder disable_auto="0">
 				<lib name="OIS" />
 				<lib name="CEGUI-0-OGRE" />
 				<lib name="bullet" />
