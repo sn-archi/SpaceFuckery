@@ -13,10 +13,9 @@
 
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
-#include "stddef.h"
-#include "vector"
-#include "map"
-#include "string"
+#include <vector>
+#include <map>
+#include <string>
 
 namespace SpaceFuckery
 {
