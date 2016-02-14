@@ -47,6 +47,7 @@ namespace SpaceFuckery
       mPhysicsEngine (0),
       mShutDown (false)
   {
+    //Initialise our physics engine
     collisionConfiguration = new btDefaultCollisionConfiguration();
     dispatcher = new btCollisionDispatcher(collisionConfiguration);
     pairCache = new btDbvtBroadphase();
@@ -56,13 +57,15 @@ namespace SpaceFuckery
 
   Application::~Application()
   {
-    //Remove ourself as a Window listener
+    // Remove ourself as a Window listener
+    // For some reasons that needs investigating this is the right way to do it.
     Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, mWindowEventListener);
     mWindowEventListener->windowClosed (mWindow);
     delete mRoot;
   }
 
   // Resource configuration loader
+  // Parses our config file for resource locations
   bool Application::loadRessources (Ogre::String Cfg)
   {
     Ogre::ConfigFile cf;
@@ -85,6 +88,8 @@ namespace SpaceFuckery
     return true;
   }
 
+  // Create and activate the various listeners that will handle
+  // mouse, keyboard or frame events
   void Application::createListeners (void)
   {
     OIS::ParamList pl;
@@ -116,6 +121,7 @@ namespace SpaceFuckery
     mRoot->addFrameListener (mFrameListener);
   }
 
+  // Load our GUI objects from our XML CEGUI layout
   void Application::createGUI (void)
   {
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
@@ -134,6 +140,8 @@ namespace SpaceFuckery
     quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Application::quit, this));
   }
 
+  // Goto function to create a testing scene inside the Application.
+  // Should disapear at some point.
   void Application::createScene (void)
   {
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
@@ -187,6 +195,7 @@ namespace SpaceFuckery
     mPhysicsEngine->setCollisionObjectCount();
   }
 
+  // Rendering loop kinda happens here
   bool Application::startRendering (void)
   {
     while (true)
@@ -196,6 +205,7 @@ namespace SpaceFuckery
       }
   }
 
+  // Fires up the application. This is the Application class entry point.
   bool Application::go()
   {
     mResourcesCfg = "etc/resources.cfg";
@@ -217,12 +227,15 @@ namespace SpaceFuckery
     return true;
   }
 
+  // Run when you want to qui the app.
   bool Application::quit (const CEGUI::EventArgs &e)
   {
     mShutDown = true;
     return true;
   }
 
+
+  // Accessors go here
   Ogre::RenderWindow* Application::getWindow (void)
   {
     return mWindow;

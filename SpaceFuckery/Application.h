@@ -24,12 +24,16 @@
 #include "KeyListener.h"
 #include "physicsEngine.h"
 
+// Predefine a our class
 namespace SpaceFuckery {class Application;}
 
+// Do I really need to export this ?
 template class _OgreExport Ogre::Singleton<SpaceFuckery::Application>;
 
 namespace SpaceFuckery
 {
+  // The application class is our application defined as a singleton.
+  // Only one instance will be allocated and will be accessible throughout our program
   class Application:
     public Ogre::Singleton<Application>
   {
@@ -67,11 +71,7 @@ namespace SpaceFuckery
       SpaceFuckery::physicsEngine* mPhysicsEngine;
       bool mShutDown;
       virtual bool loadRessources (Ogre::String Cfg);
-      // SpaceFuckery::FrameListener
       virtual void createListeners (void);
-      // OIS::KeyListener
-
-      // OIS::MouseListener
       virtual void createGUI (void);
       virtual void createScene (void);
       virtual bool startRendering (void);

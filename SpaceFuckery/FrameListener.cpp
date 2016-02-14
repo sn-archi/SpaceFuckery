@@ -21,7 +21,7 @@ namespace SpaceFuckery
     if (Application::getSingleton().getShutDown() )
       return false;
 
-    //Need to capture/update each device
+    // We need to capture/update each device
     Application::getSingleton().getKeyboard()->capture();
     Application::getSingleton().getMouse()->capture();
 
