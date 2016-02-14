@@ -60,6 +60,10 @@ namespace SpaceFuckery
       Ogre::String mPluginsCfg;
       OIS::InputManager* mInputManager;
       CEGUI::OgreRenderer* mRenderer;
+      btDefaultCollisionConfiguration* collisionConfiguration;
+      btCollisionDispatcher* dispatcher;
+      btBroadphaseInterface* pairCache;
+      btSequentialImpulseConstraintSolver* solver;
       SpaceFuckery::physicsEngine* mPhysicsEngine;
       bool mShutDown;
       virtual bool loadRessources (Ogre::String Cfg);

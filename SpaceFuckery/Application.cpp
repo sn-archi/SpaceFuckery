@@ -47,7 +47,11 @@ namespace SpaceFuckery
       mPhysicsEngine (0),
       mShutDown (false)
   {
-    mPhysicsEngine = new SpaceFuckery::physicsEngine();
+    collisionConfiguration = new btDefaultCollisionConfiguration();
+    dispatcher = new btCollisionDispatcher(collisionConfiguration);
+    pairCache = new btDbvtBroadphase();
+    solver = new btSequentialImpulseConstraintSolver();
+    mPhysicsEngine = new SpaceFuckery::physicsEngine(dispatcher, pairCache, solver, collisionConfiguration);
   }
 
   Application::~Application()
@@ -152,7 +156,6 @@ namespace SpaceFuckery
     Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
     Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
-    std::cout << "Prout lol";
     suzzyNode->attachObject (suzzyEntity);
 
     mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5) );
@@ -180,8 +183,8 @@ namespace SpaceFuckery
     suzzyBody->setUserPointer(suzzyNode);
 
     //add the body to the dynamics world
-    mPhysicsEngine->getDynamicsWorld()->addRigidBody(suzzyBody);
-    mPhysicsEngine->countPhysicsObject();
+    mPhysicsEngine->addRigidBody(suzzyBody);
+    mPhysicsEngine->setCollisionObjectCount();
   }
 
   bool Application::startRendering (void)

@@ -31,10 +31,10 @@ namespace SpaceFuckery
   bool FrameListener::frameStarted (const Ogre::FrameEvent& evt)
   {
     if (Application::getSingleton().getPhysicsEngine() != NULL){
-    Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->stepSimulation(1.0f/60.0f); //suppose you have 60 frames per second
+    Application::getSingleton().getPhysicsEngine()->stepSimulation(1.0f/60.0f); //suppose you have 60 frames per second
 
       for (int i = 0; i< Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
-        btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getDynamicsWorld()->getCollisionObjectArray()[i];
+        btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray()[i];
         btRigidBody* body = btRigidBody::upcast(obj);
 
         if (body && body->getMotionState()){

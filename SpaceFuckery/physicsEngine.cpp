@@ -13,28 +13,16 @@
 
 namespace SpaceFuckery
 {
-  physicsEngine::physicsEngine()
+  physicsEngine::physicsEngine(btDispatcher* dispatcher,btBroadphaseInterface* pairCache,btConstraintSolver* solver,btCollisionConfiguration* collisionConfiguration)
+    :btDiscreteDynamicsWorld(dispatcher, pairCache, solver, collisionConfiguration),
+    mCollisionObjectCount (0)
   {
-    collisionConfiguration = new btDefaultCollisionConfiguration();
-    dispatcher = new btCollisionDispatcher(collisionConfiguration);
-    overlappingPairCache = new btDbvtBroadphase();
-    solver = new btSequentialImpulseConstraintSolver();
-    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-    mCollisionObjectCount = 0;
+    btVector3 nullGravity = btVector3(0,0,0);
+    this->setGravity(nullGravity);
   }
 
   physicsEngine::~physicsEngine()
   {
-    delete dynamicsWorld;
-    delete solver;
-    delete overlappingPairCache;
-    delete dispatcher;
-    delete collisionConfiguration;
-  }
-
-  btDiscreteDynamicsWorld* physicsEngine::getDynamicsWorld(void)
-  {
-    return dynamicsWorld;
   }
 
   int physicsEngine::getCollisionObjectCount(void)
@@ -42,7 +30,7 @@ namespace SpaceFuckery
     return mCollisionObjectCount;
   }
 
-  void physicsEngine::countPhysicsObject(void)
+  void physicsEngine::setCollisionObjectCount(void)
   {
     mCollisionObjectCount++;
   }

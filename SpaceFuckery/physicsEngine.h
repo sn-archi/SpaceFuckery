@@ -13,26 +13,23 @@
 
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
+
 #include <vector>
 #include <map>
 #include <string>
 
 namespace SpaceFuckery
 {
-  class physicsEngine{
-  private:
-      btDefaultCollisionConfiguration* collisionConfiguration;
-      btCollisionDispatcher* dispatcher;
-      btBroadphaseInterface* overlappingPairCache;
-      btSequentialImpulseConstraintSolver* solver;
-      btDiscreteDynamicsWorld* dynamicsWorld;
+  class physicsEngine:
+    public btDiscreteDynamicsWorld
+  {
+    private:
       int mCollisionObjectCount;
     public:
-      physicsEngine();
+      physicsEngine(btDispatcher* dispatcher,btBroadphaseInterface* pairCache,btConstraintSolver* solver,btCollisionConfiguration* collisionConfiguration);
       virtual ~physicsEngine();
-      virtual btDiscreteDynamicsWorld* getDynamicsWorld(void);
       virtual int getCollisionObjectCount(void);
-      virtual void countPhysicsObject(void);
+      virtual void setCollisionObjectCount(void);
   };
 }
 
