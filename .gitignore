@@ -7,3 +7,6 @@ SpaceFuckery/obj/
 SpaceFuckery/ogre.cfg
 SpaceFuckery/CppCheckResults.xml
 SpaceFuckery/ValgrindOut.xml
+SpaceFuckery/doxygen/
+SpaceFuckery/gmon.out
+
