@@ -57,6 +57,11 @@ namespace SpaceFuckery
 
   Application::~Application()
   {
+    delete collisionConfiguration;
+    delete dispatcher;
+    delete pairCache;
+    delete solver;
+    delete mPhysicsEngine;
     // Remove ourself as a Window listener
     // For some reasons that needs investigating this is the right way to do it.
     Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, mWindowEventListener);
@@ -180,7 +185,7 @@ namespace SpaceFuckery
     btScalar suzzyMass(1);
     btVector3 localSuzzyInertia(0, 0, 0);
 
-    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
     btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
 
     suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
