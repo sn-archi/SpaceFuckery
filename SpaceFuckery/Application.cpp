@@ -30,7 +30,7 @@ namespace SpaceFuckery
 {
   template<> SpaceFuckery::Application* Ogre::Singleton<SpaceFuckery::Application>::msSingleton = 0;
 
-  Application::Application()
+  Application::Application ()
     : mRoot (0),
       mFrameListener (0),
       mWindowEventListener (0),
@@ -55,7 +55,7 @@ namespace SpaceFuckery
     mPhysicsEngine = new SpaceFuckery::physicsEngine(dispatcher, pairCache, solver, collisionConfiguration);
   }
 
-  Application::~Application()
+  Application::~Application ()
   {
     delete collisionConfiguration;
     delete dispatcher;
@@ -64,8 +64,8 @@ namespace SpaceFuckery
     delete mPhysicsEngine;
     // Remove ourself as a Window listener
     // For some reasons that needs investigating this is the right way to do it.
-    Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, mWindowEventListener);
-    mWindowEventListener->windowClosed (mWindow);
+    Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, mWindowEventListener);
+    mWindowEventListener->windowClosed(mWindow);
     delete mRoot;
   }
 
@@ -74,20 +74,20 @@ namespace SpaceFuckery
   bool Application::loadRessources (Ogre::String Cfg)
   {
     Ogre::ConfigFile cf;
-    cf.load (Cfg);
+    cf.load(Cfg);
 
     Ogre::String name, locType, secName;
-    Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
+    Ogre::ConfigFile::SectionIterator secIt(cf.getSectionIterator() );
     while (secIt.hasMoreElements() )
       {
         secName = secIt.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
+        Ogre::ConfigFile::SettingsMultiMap* settings(secIt.getNext());
         Ogre::ConfigFile::SettingsMultiMap::iterator it;
         for (it = settings->begin(); it != settings->end(); ++it)
           {
             locType = it->first;
             name = it->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation (name, locType, secName);
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType, secName);
           }
       }
     return true;
@@ -98,32 +98,32 @@ namespace SpaceFuckery
   void Application::createListeners (void)
   {
     OIS::ParamList pl;
-    size_t windowHnd = 0;
+    size_t windowHnd (0);
     std::ostringstream windowHndStr;
     mMouseListener = new SpaceFuckery::MouseListener;
     mKeyListener = new SpaceFuckery::KeyListener;
     mWindowEventListener = new WindowEventListener;
     mFrameListener = new FrameListener;
 
-    mWindow->getCustomAttribute ("WINDOW", &windowHnd);
+    mWindow->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
-    pl.insert (std::make_pair (std::string ("WINDOW"), windowHndStr.str() ) );
+    pl.insert (std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
     // Setup our input listeners
-    mInputManager = OIS::InputManager::createInputSystem ( pl );
-    mKeyboard = static_cast<OIS::Keyboard*> (mInputManager->createInputObject (OIS::OISKeyboard, true));
-    mMouse = static_cast<OIS::Mouse*> (mInputManager->createInputObject (OIS::OISMouse, true));
-    mMouse->setEventCallback (mMouseListener);
-    mKeyboard->setEventCallback (mKeyListener);
+    mInputManager = OIS::InputManager::createInputSystem(pl);
+    mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
+    mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
+    mMouse->setEventCallback(mMouseListener);
+    mKeyboard->setEventCallback(mKeyListener);
 
     //Set initial mouse clipping size
-    mWindowEventListener->windowResized (mWindow);
+    mWindowEventListener->windowResized(mWindow);
 
     //Register a window listener for the main window
-    Ogre::WindowEventUtilities::addWindowEventListener (mWindow, mWindowEventListener);
+    Ogre::WindowEventUtilities::addWindowEventListener(mWindow, mWindowEventListener);
 
     //Register a frame listener
-    mRoot->addFrameListener (mFrameListener);
+    mRoot->addFrameListener(mFrameListener);
   }
 
   // Load our GUI objects from our XML CEGUI layout
@@ -136,11 +136,11 @@ namespace SpaceFuckery
     CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
     CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
 
-    CEGUI::SchemeManager::getSingleton().createFromFile ("TaharezLook.scheme");
+    CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
     CEGUI::Window* flightWin = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("flight.layout");
-    CEGUI::Window* quitButton = flightWin->getChild ("QuitButton");
-    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow (flightWin);
+    CEGUI::Window* quitButton = flightWin->getChild("QuitButton");
+    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(flightWin);
 
     quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Application::quit, this));
   }
@@ -154,28 +154,28 @@ namespace SpaceFuckery
 
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     Ogre::Camera* mCamera;
-    mCamera = mSceneMgr->createCamera ("MainCam");
-    mCamera->setPosition (2, 2, 6);
-    mCamera->lookAt (0, 0, 0);
-    mCamera->setNearClipDistance (1);
+    mCamera = mSceneMgr->createCamera("MainCam");
+    mCamera->setPosition(2, 2, 6);
+    mCamera->lookAt(0, 0, 0);
+    mCamera->setNearClipDistance(1);
 
-    Ogre::Viewport* vp = mWindow->addViewport (mCamera);
-    vp->setBackgroundColour (Ogre::ColourValue (0, 0, 0) );
+    Ogre::Viewport* vp = mWindow->addViewport(mCamera);
+    vp->setBackgroundColour (Ogre::ColourValue(0, 0, 0) );
 
-    mCamera->setAspectRatio (
-      Ogre::Real (vp->getActualWidth() ) /
-      Ogre::Real (vp->getActualHeight() ) );
+    mCamera->setAspectRatio(
+      Ogre::Real(vp->getActualWidth() ) /
+      Ogre::Real(vp->getActualHeight() ) );
 
-    Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
+    Ogre::Entity* suzzyEntity = mSceneMgr->createEntity("Suzanne.mesh");
 
     Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
-    suzzyNode->attachObject (suzzyEntity);
+    suzzyNode->attachObject(suzzyEntity);
 
-    mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5) );
+    mSceneMgr->setAmbientLight(Ogre::ColourValue (.5, .5, .5));
 
-    Ogre::Light* light = mSceneMgr->createLight ("MainLight");
+    Ogre::Light* light = mSceneMgr->createLight("MainLight");
     mSceneMgr->createLight();
-    light->setPosition (20, 80, 50);
+    light->setPosition(20, 80, 50);
 
     // Setup some physics for our objects
     btTransform suzzyTransform;
@@ -185,7 +185,7 @@ namespace SpaceFuckery
     btScalar suzzyMass(1);
     btVector3 localSuzzyInertia(0, 0, 0);
 
-    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar (1.), btScalar (1.), btScalar (1.)));
     btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
 
     suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
@@ -206,7 +206,7 @@ namespace SpaceFuckery
     while (true)
       {
         Ogre::WindowEventUtilities::messagePump();
-        if (!mRoot->renderOneFrame() ) return false;
+        if (!mRoot->renderOneFrame()) return false;
       }
   }
 
@@ -216,14 +216,14 @@ namespace SpaceFuckery
     mResourcesCfg = "etc/resources.cfg";
     mPluginsCfg = "etc/plugins.cfg";
 
-    mRoot = new Ogre::Root (mPluginsCfg);
+    mRoot = new Ogre::Root(mPluginsCfg);
 
-    Application::loadRessources (mResourcesCfg);
+    Application::loadRessources(mResourcesCfg);
 
-    if (! (mRoot->restoreConfig() || mRoot->showConfigDialog() ) )
+    if (!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
       return false;
 
-    mWindow = mRoot->initialise (true, "SpaceFuckery");
+    mWindow = mRoot->initialise(true, "SpaceFuckery");
 
     Application::createScene();
     Application::createListeners();
@@ -246,7 +246,7 @@ namespace SpaceFuckery
     return mWindow;
   }
 
-  Ogre::SceneManager* Application::getSceneMgr(void)
+  Ogre::SceneManager* Application::getSceneMgr (void)
   {
     return mSceneMgr;
   }
@@ -276,7 +276,7 @@ namespace SpaceFuckery
     return mInputManager;
   }
 
-  SpaceFuckery::physicsEngine* Application::getPhysicsEngine(void)
+  SpaceFuckery::physicsEngine* Application::getPhysicsEngine (void)
   {
     return mPhysicsEngine;
   }
