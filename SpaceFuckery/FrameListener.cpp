@@ -11,16 +11,17 @@
 #include "Application.h"
 #include "FrameListener.h"
 #include "OgreVector3.h"
+#include <cmath>
 
 namespace SpaceFuckery {
   const btVector3 calcForce (const btVector3 currentPos) {
-    double G = 1.0;
-    double earthMass = 10.0;
-    double shipMass = 1.0;
+    double G = 1.;
+    double earthMass = 1000.;
+    double shipMass = 1.;
     Ogre::Vector3 ogreCurrentPos = Ogre::Vector3 (currentPos.getX(), currentPos.getY(), currentPos.getZ() );
-    Ogre::Vector3 earthPos = Ogre::Vector3 (0.0, 0.0, 0.0);
-    Ogre::Vector3 totalForce = Ogre::Vector3 (0.0, 0.0, 0.0);
-    Ogre::Vector3 localDistVect = ogreCurrentPos - earthPos;
+    Ogre::Vector3 earthPos = Ogre::Vector3::ZERO;
+    Ogre::Vector3 totalForce = Ogre::Vector3::ZERO;
+    Ogre::Vector3 localDistVect = earthPos - ogreCurrentPos;
     localDistVect.normalise();
     double squaredDist = ogreCurrentPos.squaredDistance (earthPos);
     double Fg = G * earthMass * shipMass / squaredDist;
@@ -50,8 +51,8 @@ namespace SpaceFuckery {
       for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
         btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
         btRigidBody* body = btRigidBody::upcast (obj);
-//        btVector3 currentPos = body->getCenterOfMassPosition();
-//        body->applyCentralForce(calcForce(currentPos));
+        btVector3 currentPos = body->getCenterOfMassPosition();
+        body->applyCentralForce(calcForce(currentPos));
 
         if (body && body->getMotionState() ) {
           btTransform trans;
