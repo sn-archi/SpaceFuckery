@@ -12,13 +12,14 @@
 
 namespace SpaceFuckery
 {
-  //Adjust mouse clipping area
+
   void WindowEventListener::windowResized (Ogre::RenderWindow* rw)
   {
     unsigned int width, height, depth;
     int left, top;
     rw->getMetrics (width, height, depth, left, top);
 
+    //Adjust mouse clipping area
     const OIS::MouseState &ms = Application::getSingleton().getMouse()->getMouseState();
     ms.width = width;
     ms.height = height;
