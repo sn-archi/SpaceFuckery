@@ -8,10 +8,12 @@
 *                                         *
 ******************************************/
 
+#include "CEGUI/CEGUI.h"
 #include "Application.h"
 #include "FrameListener.h"
 #include "OgreVector3.h"
 #include <cmath>
+#include <string>
 
 namespace SpaceFuckery {
   const btVector3 calcForce (const btVector3 currentPos) {
@@ -27,6 +29,9 @@ namespace SpaceFuckery {
     double Fg = G * earthMass * shipMass / squaredDist;
     totalForce += Fg * localDistVect;
     btVector3 result = btVector3 (totalForce.x, totalForce.y, totalForce.z);
+    CEGUI::Window* flightWin = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow();
+    CEGUI::Window* altitudeText = flightWin->getChild("Altitude");
+    altitudeText->setText(std::to_string(std::sqrt(squaredDist)));
     return result;
     }
 

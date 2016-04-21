@@ -3,8 +3,13 @@
   <Window type="DefaultWindow" name="root">
     <Window type="TaharezLook/Button" name="QuitButton">
       <Property name="Position" value="{{0, 2}, {0, 2}}" />
-      <Property name="Size" value="{{0.15, 0}, {0.05, 0}}" />
+      <Property name="Size" value="{{0.20, 0}, {0.05, 0}}" />
       <Property name="Text" value="Quit" />
     </Window>
+    <Window type="TaharezLook/StaticText" name="Altitude">
+      <Property name="Position" value="{{0, 2}, {0.06, 0}}" />
+      <Property name="Size" value="{{0.20, 0}, {0.05, 0}}" />
+      <Property name="Text" value="Altitude" />
+    </Window>
   </Window>
-</GUILayout>	
+</GUILayout>
