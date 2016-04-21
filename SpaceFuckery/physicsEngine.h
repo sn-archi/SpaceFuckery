@@ -1,15 +1,14 @@
 #ifndef PHYSICS_H_INCLUDED
 #define PHYSICS_H_INCLUDED
 
-/******************************************
-*                                         *
-* Project: SpaceFuckery                   *
-* Function:                               *
-*                                         *
-*   Copyright 2015 - Marc-Olivier Barre   *
-*           All rights reserved           *
-*                                         *
-******************************************/
+/*************************************************
+*                                                *
+* Project: SpaceFuckery                          *
+*                                                *
+*   Copyright 2015 - 2016 - Marc-Olivier Barre   *
+*              All rights reserved               *
+*                                                *
+**************************************************/
 
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"

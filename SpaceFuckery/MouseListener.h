@@ -1,15 +1,14 @@
 #ifndef MOUSELISTENER_H_INCLUDED
 #define MOUSELISTENER_H_INCLUDED
 
-/******************************************
-*                                         *
-* Project: SpaceFuckery                   *
-* Function:                               *
-*                                         *
-*   Copyright 2015 - Marc-Olivier Barre   *
-*           All rights reserved           *
-*                                         *
-******************************************/
+/*************************************************
+*                                                *
+* Project: SpaceFuckery                          *
+*                                                *
+*   Copyright 2015 - 2016 - Marc-Olivier Barre   *
+*              All rights reserved               *
+*                                                *
+**************************************************/
 
 #include "OISInputManager.h"
 

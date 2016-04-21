@@ -1,15 +1,14 @@
 #ifndef APPLICATION_H_INCLUDED
 #define APPLICATION_H_INCLUDED
 
-/******************************************
-*                                         *
-* Project: SpaceFuckery                   *
-* Singleton: Application                  *
-*                                         *
-*   Copyright 2015 - Marc-Olivier Barre   *
-*           All rights reserved           *
-*                                         *
-******************************************/
+/*************************************************
+*                                                *
+* Project: SpaceFuckery                          *
+*                                                *
+*   Copyright 2015 - 2016 - Marc-Olivier Barre   *
+*              All rights reserved               *
+*                                                *
+**************************************************/
 
 #include "OgreRoot.h"
 #include "OgreSingleton.h"

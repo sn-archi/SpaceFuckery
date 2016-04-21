@@ -1,15 +1,14 @@
 #ifndef FRAMELISTENER_H_INCLUDED
 #define FRAMELISTENER_H_INCLUDED
 
-/******************************************
-*                                         *
-* Project: SpaceFuckery                   *
-* Interface: FrameListener                *
-*                                         *
-*   Copyright 2015 - Marc-Olivier Barre   *
-*           All rights reserved           *
-*                                         *
-******************************************/
+/*************************************************
+*                                                *
+* Project: SpaceFuckery                          *
+*                                                *
+*   Copyright 2015 - 2016 - Marc-Olivier Barre   *
+*              All rights reserved               *
+*                                                *
+**************************************************/
 
 #include "OgreFrameListener.h"
 

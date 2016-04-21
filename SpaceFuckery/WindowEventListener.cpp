@@ -1,12 +1,11 @@
-/******************************************
-*                                         *
-* Project: SpaceFuckery                   *
-* Interface: WindowEventListener          *
-*                                         *
-*   Copyright 2015 - Marc-Olivier Barre   *
-*           All rights reserved           *
-*                                         *
-******************************************/
+/*************************************************
+*                                                *
+* Project: SpaceFuckery                          *
+*                                                *
+*   Copyright 2015 - 2016 - Marc-Olivier Barre   *
+*              All rights reserved               *
+*                                                *
+**************************************************/
 
 #include "Application.h"
 #include "WindowEventListener.h"
