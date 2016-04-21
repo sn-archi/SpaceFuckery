@@ -38,15 +38,14 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-pedantic" />
 			<Add option="-std=c++11" />
 			<Add option="-Wall" />
-			<Add option="-ansi" />
 			<Add option="-Wno-unused" />
 		</Compiler>
 		<Linker>
 			<Add library="boost_system" />
 		</Linker>
+		<Unit filename="../media/layouts/flight.layout" />
 		<Unit filename="Application.cpp" />
 		<Unit filename="Application.h" />
 		<Unit filename="FrameListener.cpp" />
