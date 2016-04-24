@@ -11,14 +11,18 @@
 #include "Application.h"
 #include "FrameListener.h"
 #include "OgreVector3.h"
+#include "Orbit.h"
 #include <cmath>
 #include <string>
 
+const btScalar earthMass = 5.97237e24;
+const btScalar G = 6.6725985e-11;
+const btScalar Mu = G*earthMass;
+
 namespace SpaceFuckery {
-  const btVector3 calcForce (const btVector3 currentPos) {
-    double G = 1.;
-    double earthMass = 1000.;
+  const btVector3 calcForce (const btRigidBody* ship) {
     double shipMass = 1.;
+    btVector3 currentPos = ship->getCenterOfMassPosition();
     Ogre::Vector3 ogreCurrentPos = Ogre::Vector3 (currentPos.getX(), currentPos.getY(), currentPos.getZ() );
     Ogre::Vector3 earthPos = Ogre::Vector3::ZERO;
     Ogre::Vector3 totalForce = Ogre::Vector3::ZERO;
@@ -30,7 +34,11 @@ namespace SpaceFuckery {
     btVector3 result = btVector3 (totalForce.x, totalForce.y, totalForce.z);
     CEGUI::Window* flightWin = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow();
     CEGUI::Window* altitudeText = flightWin->getChild("Altitude");
+    CEGUI::Window* angVelText = flightWin->getChild("angVel");
+    CEGUI::Window* linVelText = flightWin->getChild("linVel");
     altitudeText->setText(std::to_string(std::sqrt(squaredDist)));
+    Orbit suzzyOrbit = Orbit(ship->getCenterOfMassPosition(),ship->getLinearVelocity(), btVector3(0,0,0),1);
+    std::cout << suzzyOrbit << std::endl;
     return result;
     }
 
@@ -55,8 +63,7 @@ namespace SpaceFuckery {
       for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
         btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
         btRigidBody* body = btRigidBody::upcast (obj);
-        btVector3 currentPos = body->getCenterOfMassPosition();
-        body->applyCentralForce(calcForce(currentPos));
+        body->applyCentralForce(calcForce(body));
 
         if (body && body->getMotionState() ) {
           btTransform trans;

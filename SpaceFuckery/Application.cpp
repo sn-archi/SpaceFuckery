@@ -24,6 +24,7 @@
 #include "WindowEventListener.h"
 #include "MouseListener.h"
 #include "KeyListener.h"
+#include "Orbit.h"
 
 namespace SpaceFuckery
 {
@@ -165,7 +166,7 @@ namespace SpaceFuckery
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera("MainCam");
-    mCamera->setPosition(5, 0, 15);
+    mCamera->setPosition(0, 15, 0);
     mCamera->lookAt(0, 0, 0);
     mCamera->setNearClipDistance(1);
 
@@ -190,10 +191,10 @@ namespace SpaceFuckery
     // Setup some physics for our objects
     btTransform suzzyTransform;
     suzzyTransform.setIdentity();
-    suzzyTransform.setOrigin(btVector3(-5, 0, 0));
+    suzzyTransform.setOrigin(btVector3(0, 0, 10000000));
 
     btScalar suzzyMass(1);
-    btVector3 localSuzzyInertia(1, 1, 1);
+    btVector3 localSuzzyInertia(0, 0, 0);
 
     btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar (1.), btScalar (1.), btScalar (1.)));
     btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
@@ -210,7 +211,7 @@ namespace SpaceFuckery
     mPhysicsEngine->setCollisionObjectCount();
 
     // Give it speed
-    suzzyBody->setLinearVelocity(btVector3(0, 2, 10));
+    suzzyBody->setLinearVelocity(btVector3(10000, 0, 0));
   }
 
   // Rendering loop kinda happens here
