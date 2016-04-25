@@ -34,8 +34,6 @@ namespace SpaceFuckery {
     btVector3 result = btVector3 (totalForce.x, totalForce.y, totalForce.z);
     CEGUI::Window* flightWin = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow();
     CEGUI::Window* altitudeText = flightWin->getChild("Altitude");
-    CEGUI::Window* angVelText = flightWin->getChild("angVel");
-    CEGUI::Window* linVelText = flightWin->getChild("linVel");
     altitudeText->setText(std::to_string(std::sqrt(squaredDist)));
     Orbit suzzyOrbit = Orbit(ship->getCenterOfMassPosition(),ship->getLinearVelocity(), btVector3(0,0,0),1);
     std::cout << suzzyOrbit << std::endl;

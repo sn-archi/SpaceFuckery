@@ -166,9 +166,10 @@ namespace SpaceFuckery
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera("MainCam");
-    mCamera->setPosition(0, 15, 0);
+    mCamera->setPosition(0, 1400000, 1);
     mCamera->lookAt(0, 0, 0);
     mCamera->setNearClipDistance(1);
+    mCamera->setFarClipDistance(1500000);
 
     Ogre::Viewport* vp = mWindow->addViewport(mCamera);
     vp->setBackgroundColour (Ogre::ColourValue(0, 0, 0) );
@@ -178,9 +179,14 @@ namespace SpaceFuckery
       Ogre::Real(vp->getActualHeight() ) );
 
     Ogre::Entity* suzzyEntity = mSceneMgr->createEntity("Suzanne.mesh");
+    Ogre::Entity* earthEntity = mSceneMgr->createEntity("Suzanne.mesh");
 
     Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
+    Ogre::SceneNode* earthNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Earth");
     suzzyNode->attachObject(suzzyEntity);
+    earthNode->attachObject(earthEntity);
+
+    earthNode->scale(6.0e6, 6.0e6, 6.0e6);
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue (.5, .5, .5));
 
@@ -188,33 +194,55 @@ namespace SpaceFuckery
     mSceneMgr->createLight();
     light->setPosition(20, 80, 50);
 
-    // Setup some physics for our objects
+    /** Setup some physics for our objects */
     btTransform suzzyTransform;
     suzzyTransform.setIdentity();
-    suzzyTransform.setOrigin(btVector3(0, 0, 10000000));
+    suzzyTransform.setOrigin(btVector3(0, 0, -1000000));
+
+    /** Setup some physics for our objects */
+    btTransform earthTransform;
+    earthTransform.setIdentity();
+    earthTransform.setOrigin(btVector3(0, 0, 0));
 
     btScalar suzzyMass(1);
+    btScalar earthMass(5.97237e24);
     btVector3 localSuzzyInertia(0, 0, 0);
+    btVector3 localEarthInertia(0, 0, 0);
 
     btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar (1.), btScalar (1.), btScalar (1.)));
     btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
 
+    btCollisionShape *earthShape = new btSphereShape(btScalar(6.0e6));
+    btDefaultMotionState *earthMotionState = new btDefaultMotionState(earthTransform);
+
     suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
+    earthShape->calculateLocalInertia(earthMass, localEarthInertia);
 
     btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo(suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
     btRigidBody* suzzyBody = new btRigidBody(suzzyRBInfo);
 
-    suzzyBody->setUserPointer(suzzyNode);
+    btRigidBody::btRigidBodyConstructionInfo earthRBInfo(earthMass, earthMotionState, earthShape, localEarthInertia);
+    btRigidBody* earthBody = new btRigidBody(earthRBInfo);
 
-    //add the body to the dynamics world
+    suzzyBody->setUserPointer(suzzyNode);
+    suzzyBody->setDamping(0,0);
+
+    earthBody->setUserPointer(earthNode);
+    earthBody->setDamping(0,0);
+
+    /** add the body to the dynamics world */
     mPhysicsEngine->addRigidBody(suzzyBody);
     mPhysicsEngine->setCollisionObjectCount();
 
-    // Give it speed
+    /** add the earth to the dynamics world */
+    mPhysicsEngine->addRigidBody(earthBody);
+    mPhysicsEngine->setCollisionObjectCount();
+
+    /** Give Suzzy some speed */
     suzzyBody->setLinearVelocity(btVector3(10000, 0, 0));
   }
 
-  // Rendering loop kinda happens here
+  /** Rendering loop kinda happens here */
   bool Application::startRendering (void)
   {
     while (true)

@@ -40,8 +40,8 @@ namespace SpaceFuckery
 
     e = Velocity.cross(h)/Mu-Position/Position.length(); // Eccentricity vector
     ECCE = e.length(); // Eccentricity
-    I0 = std::acos(Hz/H); //inclination
-    RAAN = (I0 == 0)?0:std::atan2(Hx, -Hy); // Right ascension of ascending node
+    I0 = std::acos(-Hy/H); //inclination
+    RAAN = (I0 == 0)?0:std::atan2(Hx, -Hz); // Right ascension of ascending node
 
     btScalar TAx = H*H/(R*Mu) - 1;
     btScalar TAy = H*q/(R*Mu);

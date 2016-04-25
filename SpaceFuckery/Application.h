@@ -23,6 +23,8 @@
 #include "KeyListener.h"
 #include "physicsEngine.h"
 
+#include <iomanip>
+
 // Predefine a our class
 namespace SpaceFuckery {class Application;}
 
