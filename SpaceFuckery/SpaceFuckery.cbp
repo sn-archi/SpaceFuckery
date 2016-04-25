@@ -54,6 +54,8 @@
 		<Unit filename="KeyListener.h" />
 		<Unit filename="MouseListener.cpp" />
 		<Unit filename="MouseListener.h" />
+		<Unit filename="Orbit.cpp" />
+		<Unit filename="Orbit.h" />
 		<Unit filename="WindowEventListener.cpp" />
 		<Unit filename="WindowEventListener.h" />
 		<Unit filename="etc/plugins.cfg" />
