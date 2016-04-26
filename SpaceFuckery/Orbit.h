@@ -37,6 +37,7 @@ namespace SpaceFuckery
       btVector3 getPosition(void);
       btVector3 getVelocity(void);
       friend std::ostream& operator << ( std::ostream& o, const Orbit& v );
+      void printVector(void);
 
     private:
       btVector3 Position;       // Instantaneous Position

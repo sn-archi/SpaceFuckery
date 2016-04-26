@@ -8,15 +8,11 @@
 **************************************************/
 
 #include "Orbit.h"
+#include "Constants.h"
 #include <cmath>
 #include <string>
 #include <iostream>
-
-const btScalar Pi = 3.14159265358979;
-const btScalar twoPi = 2*Pi;
-const btScalar earthMass = 5.97237e24;
-const btScalar G = 6.6725985e-11;
-const btScalar Mu = G*earthMass;
+#include <iomanip>
 
 namespace SpaceFuckery
 {
@@ -38,7 +34,7 @@ namespace SpaceFuckery
 
     btScalar q = Position.dot(Velocity);
 
-    e = Velocity.cross(h)/Mu-Position/Position.length(); // Eccentricity vector
+    e = Velocity.cross(h)/Mu - Position/Position.length(); // Eccentricity vector
     ECCE = e.length(); // Eccentricity
     I0 = std::acos(-Hy/H); //inclination
     RAAN = (I0 == 0)?0:std::atan2(Hx, -Hz); // Right ascension of ascending node
@@ -132,7 +128,14 @@ namespace SpaceFuckery
   /** Function for writing to a stream.*/
   std::ostream& operator << ( std::ostream& o, const Orbit& v )
   {
-      o << "Orbit(" << "ECCE: " << v.ECCE << ", " << "I0: " << v.I0*180/Pi << ", " << "RAAN: " << v.RAAN*180/Pi << ", " << "ARGP: " << v.ARGP*180/Pi << ", " << "N0: " << v.N0 << ", " << "M0: " << v.M0 << ", " << "a: " << v.a << ", " << "Periapsis: " << v.Periapsis << ", " << "Apoapsis: " << v.Apoapsis << ")";
+      //o << "Orbit(" << "ECCE: " << v.ECCE << ", " << "I0: " << v.I0*180/Pi << ", " << "RAAN: " << v.RAAN*180/Pi << ", " << "ARGP: " << v.ARGP*180/Pi << ", " << "N0: " << v.N0 << ", " << "M0: " << v.M0 << ", " << "a: " << v.a << ", " << "Periapsis: " << v.Periapsis << ", " << "Apoapsis: " << v.Apoapsis << ")";
+      o << v.ECCE << "," << v.I0*180/Pi << "," << v.RAAN*180/Pi << "," << v.ARGP*180/Pi << "," << v.N0 << "," << v.M0 << "," << v.a << "," << v.Periapsis << ", " << v.Apoapsis;
       return o;
+  }
+
+    void Orbit::printVector(void)
+  {
+      std::cout << std::setprecision(16);
+      std::cout << Position.getX() << "," << Position.getY() << "," << Position.getZ() << "," << Velocity.getX() << "," << Velocity.getY() << "," << Velocity.getZ() << std::endl;
   }
 }
