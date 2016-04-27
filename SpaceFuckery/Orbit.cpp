@@ -21,51 +21,16 @@ namespace SpaceFuckery
     Velocity (Velocity),
     centralBodyPos (centralBodyPos)
   {
-    btScalar R = Position.length(); // Distance to central body
-    btScalar V = Velocity.length(); // Linear speed
-    a = 1/(2/R - V*V/Mu); //  semi-major axis
-
-    /** Angular momentum */
-    h = Position.cross(Velocity);
-    btScalar H = h.length();
-    btScalar Hx = h.getX();
-    btScalar Hy = h.getY();
-    btScalar Hz = h.getZ();
-
-    btScalar q = Position.dot(Velocity);
-
-    e = Velocity.cross(h)/Mu - Position/Position.length(); // Eccentricity vector
-    ECCE = e.length(); // Eccentricity
-    I0 = std::acos(-Hy/H); //inclination
-    RAAN = (I0 == 0)?0:std::atan2(Hx, -Hz); // Right ascension of ascending node
-
-    btScalar TAx = H*H/(R*Mu) - 1;
-    btScalar TAy = H*q/(R*Mu);
-    btScalar TA = std::atan2(TAy, TAx);
-    btScalar Cw = (Position.getX()*std::cos(RAAN) + Position.getY()*std::sin(RAAN))/R;
-
-    btScalar Sw = ( I0 == 0 || I0 == Pi)?(Position.getY()*std::cos(RAAN) - Position.getX()*std::sin(RAAN))/R:Position.getZ()/(R*std::sin(I0));
-
-    ARGP = std::atan2(Sw, Cw) - TA; // Argument of periapsis
-    if (ARGP < 0) { ARGP = twoPi + ARGP; };
-
-    btScalar PlusMinus = a*ECCE;
-    Periapsis = a - PlusMinus; // Periapsis
-    Apoapsis = a + PlusMinus; // Apoapsis
-    //btScalar u = std::atan2(e.getY(), e.getX()); // Eccentric anomaly
-    btScalar u = e.angle(btVector3(1,0,0)); // Eccentric anomaly
-    M0 = u - ECCE*std::sin(u); // Mean anomaly
-    btScalar TL = ARGP + TA + RAAN; // True longitude
-    N0 = twoPi*std::sqrt((a*a*a / (G*(mass + earthMass)))); // Mean motion or period
+    update(Position, Velocity);
   }
 
-  Orbit::Orbit (btScalar I0, btScalar RAAN, btScalar ARGP, btScalar ECCE, btScalar N0, btScalar M0) :
+  Orbit::Orbit (btScalar I0, btScalar RAAN, btScalar ARGP, btScalar ECCE, btScalar TA, int Epoch) :
     I0 (I0),
     RAAN (RAAN),
     ARGP (ARGP),
     ECCE (ECCE),
-    N0 (N0),
-    M0 (M0)
+    TA (TA),
+    Epoch (Epoch)
   {
 
   }
@@ -77,7 +42,57 @@ namespace SpaceFuckery
 
   void Orbit::update (btVector3 Position, btVector3 Velocity)
   {
+    /** distance and speed to central body */
+    btScalar R = Position.length();
+    btScalar V = Velocity.length();
 
+    /** Angular momentum */
+    h = Position.cross(Velocity);
+    btScalar H = h.length();
+    btScalar Hx = h.getX();
+    btScalar Hy = h.getY();
+    btScalar Hz = h.getZ();
+
+    /** Node vector */
+    btVector3 nhat = Khat.cross(h);
+
+    /** Eccentricity vector */
+    e = ((V*V - Mu/R)*Position - (Position.dot(Velocity))*Velocity)/Mu;
+    std::cout << "e = (" << e.getX() << "," << e.getY() << "," << e.getZ() << ")" << std::endl;
+    ECCE = e.length(); // Eccentricity
+
+
+    /** Specific orbital energy */
+    btScalar E = V*V/2 - Mu/R;
+    std::cout << "E = " << E << std::endl;
+
+    /** Semi-major axis and periapsis */
+    if (e.length() != 1)
+    {
+      a = -Mu/(2*E);
+      Periapsis = a*(1 - e.length()*e.length());
+    }
+    else
+    {
+      a = INFINITY;
+      Periapsis = H*H/Mu;
+    }
+
+    /** I0: inclination */
+    I0 = std::acos(h.getZ()/H);
+
+    /** RAAN: Right ascension of ascending node */
+    RAAN = std::acos(nhat.getX()/nhat.length());
+
+    /** ARGP: Argument of periapsis */
+    RAAN = std::acos(nhat.dot(e)/(nhat.length()*ECCE));
+
+    /** TA: True anomaly*/
+    TA = std::acos(e.dot(Position)/(ECCE*Position.length()));
+
+    btScalar PlusMinus = a*ECCE;
+    Periapsis = a - PlusMinus; // Periapsis
+    Apoapsis = a + PlusMinus; // Apoapsis
   }
 
   btScalar Orbit::getI0(void)
@@ -129,13 +144,13 @@ namespace SpaceFuckery
   std::ostream& operator << ( std::ostream& o, const Orbit& v )
   {
       //o << "Orbit(" << "ECCE: " << v.ECCE << ", " << "I0: " << v.I0*180/Pi << ", " << "RAAN: " << v.RAAN*180/Pi << ", " << "ARGP: " << v.ARGP*180/Pi << ", " << "N0: " << v.N0 << ", " << "M0: " << v.M0 << ", " << "a: " << v.a << ", " << "Periapsis: " << v.Periapsis << ", " << "Apoapsis: " << v.Apoapsis << ")";
-      o << v.ECCE << "," << v.I0*180/Pi << "," << v.RAAN*180/Pi << "," << v.ARGP*180/Pi << "," << v.N0 << "," << v.M0 << "," << v.a << "," << v.Periapsis << ", " << v.Apoapsis;
+      o << v.ECCE << ", " << v.Position.length() << ", " << v.Velocity.length() << ", " << v.I0*180/Pi << ", " << v.Periapsis << ", " << v.Apoapsis;
       return o;
   }
 
     void Orbit::printVector(void)
   {
-      std::cout << std::setprecision(16);
-      std::cout << Position.getX() << "," << Position.getY() << "," << Position.getZ() << "," << Velocity.getX() << "," << Velocity.getY() << "," << Velocity.getZ() << std::endl;
+      std::cout << std::setprecision(6);
+      std::cout << Position.getX() << ", " << Position.getY() << ", " << Position.getZ() << " -- " << Velocity.getX() << ", " << Velocity.getY() << ", " << Velocity.getZ() << std::endl;
   }
 }

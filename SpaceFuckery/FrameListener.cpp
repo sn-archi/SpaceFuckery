@@ -9,7 +9,6 @@
 
 #include "Application.h"
 #include "FrameListener.h"
-#include "OgreVector3.h"
 #include "Orbit.h"
 #include "Constants.h"
 #include "CEGUI/CEGUI.h"
@@ -17,20 +16,30 @@
 #include <string>
 
 namespace SpaceFuckery {
-  const btVector3 calcForce (const btRigidBody* ship) {
+  FrameListener::FrameListener():
+    mTimer (0),
+    lastFrameTime (0),
+    nowTime (0)
+  {
+    mTimer = new Ogre::Timer;
+    lastFrameTime = mTimer->getMicroseconds();
+  }
+
+  btVector3 FrameListener::calcForce (const btRigidBody* ship)
+  {
     btScalar shipMass = 1.;
     btVector3 currentPos = ship->getCenterOfMassPosition();
     btVector3 earthPos = btVector3(0., 0., 0.);
     btVector3 totalForce = btVector3(0., 0., 0.);
-    btVector3 localDistVect = earthPos - currentPos;
+    btVector3 localDistVect = currentPos - earthPos;
     localDistVect.normalize();
-    btScalar Fg = (G*earthMass*shipMass)/currentPos.distance2(earthPos);
-    totalForce += Fg * localDistVect;
+    btScalar Fg = (Mu*shipMass)/currentPos.distance2(earthPos);
+    totalForce += Fg * -localDistVect;
     CEGUI::Window* flightWin = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow();
     CEGUI::Window* altitudeText = flightWin->getChild("Altitude");
     altitudeText->setText(std::to_string(currentPos.distance(earthPos)));
     return totalForce;
-    }
+  }
 
   bool FrameListener::frameRenderingQueued (const Ogre::FrameEvent& evt) {
     if (Application::getSingleton().getWindow()->isClosed() )
@@ -43,27 +52,35 @@ namespace SpaceFuckery {
     Application::getSingleton().getKeyboard()->capture();
     Application::getSingleton().getMouse()->capture();
 
+
+
     return true;
     }
 
   bool FrameListener::frameStarted (const Ogre::FrameEvent& evt) {
+    nowTime = mTimer->getMicroseconds();
+    btScalar lastFrameLength = (nowTime - lastFrameTime)*1.0e-6;
     if (Application::getSingleton().getPhysicsEngine() != NULL) {
-      Application::getSingleton().getPhysicsEngine()->stepSimulation (1.0f / 240.0f); //suppose you have 60 frames per second
+      Application::getSingleton().getPhysicsEngine()->stepSimulation(lastFrameLength,10,1.f/240.f);
 
       for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
         btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
 
         btRigidBody* body = btRigidBody::upcast (obj);
-        body->applyCentralForce(calcForce(body));
 
         Orbit suzzyOrbit = Orbit(body->getCenterOfMassPosition(),body->getLinearVelocity(), btVector3(0,0,0), 1);
-        std::cout << std::setprecision(16);
+        std::cout << std::setprecision(6);
         std::cout << suzzyOrbit << std::endl;
-        //suzzyOrbit.printVector();
+        suzzyOrbit.printVector();
+
+        btVector3 currentForce = calcForce(body);
+        std::cout << currentForce.getX() << ", " << currentForce.getY() << ", " << currentForce.getZ() << std::endl;
+
+        body->applyCentralForce(currentForce);
 
         if (body && body->getMotionState() ) {
           btTransform trans;
-          body->getMotionState()->getWorldTransform (trans);
+          body->getMotionState()->getWorldTransform(trans);
 
           void *userPointer = body->getUserPointer();
           if (userPointer) {
@@ -75,6 +92,8 @@ namespace SpaceFuckery {
           }
         }
       }
+    lastFrameTime = mTimer->getMicroseconds();
+    std::cout << 1/lastFrameLength << std::endl;
     return true;
     }
 

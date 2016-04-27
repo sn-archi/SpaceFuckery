@@ -166,8 +166,8 @@ namespace SpaceFuckery
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     Ogre::Camera* mCamera;
     mCamera = mSceneMgr->createCamera("MainCam");
-    mCamera->setPosition(0, 140000, 1);
-    mCamera->lookAt(0, 0, 0);
+    mCamera->setPosition(0, 500, 100);
+    mCamera->lookAt(0, 0, 50);
     mCamera->setNearClipDistance(1);
     mCamera->setFarClipDistance(150000);
 
@@ -187,12 +187,13 @@ namespace SpaceFuckery
     //earthNode->attachObject(earthEntity);
 
     //earthNode->scale(6.0e6, 6.0e6, 6.0e6);
+    suzzyNode->scale(10., 10., 10.);
 
     mSceneMgr->setAmbientLight(Ogre::ColourValue (.5, .5, .5));
 
     Ogre::Light* light = mSceneMgr->createLight("MainLight");
     mSceneMgr->createLight();
-    light->setPosition(20, 80, 50);
+    light->setPosition(200, 400, 500);
 
     /** Setup some physics for our objects */
     btTransform suzzyTransform;
@@ -239,7 +240,7 @@ namespace SpaceFuckery
 //    mPhysicsEngine->setCollisionObjectCount();
 
     /** Give Suzzy some speed */
-    suzzyBody->setLinearVelocity(btVector3(200., 0., 0.));
+    suzzyBody->setLinearVelocity(btVector3(10., 0., 0.));
   }
 
   /** Rendering loop kinda happens here */

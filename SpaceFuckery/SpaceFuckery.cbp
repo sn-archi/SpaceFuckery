@@ -48,6 +48,7 @@
 		<Unit filename="../media/layouts/flight.layout" />
 		<Unit filename="Application.cpp" />
 		<Unit filename="Application.h" />
+		<Unit filename="Constants.h" />
 		<Unit filename="FrameListener.cpp" />
 		<Unit filename="FrameListener.h" />
 		<Unit filename="KeyListener.cpp" />

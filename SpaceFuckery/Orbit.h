@@ -21,7 +21,7 @@ namespace SpaceFuckery
       /** State vector contrusctor */
       Orbit (btVector3 Position, btVector3 Velocity, btVector3 centralBodyPos, btScalar mass);
       /** Keplerian contrusctor */
-      Orbit(btScalar I0, btScalar RAAN, btScalar ARGP, btScalar ECCE, btScalar N0, btScalar M0);
+      Orbit (btScalar I0, btScalar RAAN, btScalar ARGP, btScalar ECCE, btScalar TA, int Epoch);
       /** Default destructor */
       virtual ~Orbit();
       /** Update an orbit with a new position and velocity */
@@ -52,8 +52,10 @@ namespace SpaceFuckery
       btScalar N0;              // Mean Anomaly
       btScalar M0;              // Mean Motion
       btScalar a;               // Semi-major Axis
+      btScalar TA;              // True anomaly
       btScalar Periapsis;
       btScalar Apoapsis;
+      int Epoch;
   };
 }
 #endif // ORBIT_H
