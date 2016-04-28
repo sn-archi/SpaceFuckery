@@ -239,8 +239,8 @@ namespace SpaceFuckery
     mWindow = mRoot->initialise(true, "SpaceFuckery");
 
     Application::createScene();
-    Application::createListeners();
     Application::createGUI();
+    Application::createListeners();
     Application::startRendering();
     return true;
   }

@@ -23,6 +23,8 @@ namespace SpaceFuckery
     const OIS::MouseState &ms = Application::getSingleton().getMouse()->getMouseState();
     ms.width = width;
     ms.height = height;
+    //Notify CEGUI of the window size change
+    CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Sizef(static_cast <float>(width), static_cast <float>(height)));
   }
 
   //Unattach OIS before window shutdown (very important under Linux)
