@@ -116,6 +116,7 @@ namespace SpaceFuckery
     pl.insert(std::make_pair(string("w32_keyboard"),string("DISCL_EXCLUSIVE") ));
     #elif defined OIS_LINUX_PLATFORM
     pl.insert(std::make_pair(std::string("x11_mouse_grab"),std::string("false") ));
+    pl.insert(std::make_pair(std::string("x11_keyboard_grab"),std::string("false") ));
     #endif
 
     // Setup our input listeners
@@ -238,8 +239,8 @@ namespace SpaceFuckery
     mWindow = mRoot->initialise(true, "SpaceFuckery");
 
     Application::createScene();
-    Application::createListeners();
     Application::createGUI();
+    Application::createListeners();
     Application::startRendering();
     return true;
   }
