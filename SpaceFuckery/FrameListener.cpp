@@ -61,11 +61,8 @@ namespace SpaceFuckery {
     nowTime = mTimer->getMicroseconds();
     btScalar lastFrameLength = (nowTime - lastFrameTime)*1.0e-6;
     if (Application::getSingleton().getPhysicsEngine() != NULL) {
-      Application::getSingleton().getPhysicsEngine()->stepSimulation(lastFrameLength,10,1.f/240.f);
-
       for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
         btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
-
         btRigidBody* body = btRigidBody::upcast (obj);
 
         Orbit suzzyOrbit = Orbit(body->getCenterOfMassPosition(),body->getLinearVelocity(), btVector3(0,0,0), 1);
@@ -77,6 +74,13 @@ namespace SpaceFuckery {
         std::cout << currentForce.getX() << ", " << currentForce.getY() << ", " << currentForce.getZ() << std::endl;
 
         body->applyCentralForce(currentForce);
+      }
+
+      Application::getSingleton().getPhysicsEngine()->stepSimulation(lastFrameLength,1,1.f/60.f);
+
+      for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
+        btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
+        btRigidBody* body = btRigidBody::upcast (obj);
 
         if (body && body->getMotionState() ) {
           btTransform trans;
