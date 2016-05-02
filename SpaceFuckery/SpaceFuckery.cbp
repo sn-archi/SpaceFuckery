@@ -48,12 +48,15 @@
 		<Unit filename="../media/layouts/flight.layout" />
 		<Unit filename="Application.cpp" />
 		<Unit filename="Application.h" />
+		<Unit filename="Constants.h" />
 		<Unit filename="FrameListener.cpp" />
 		<Unit filename="FrameListener.h" />
 		<Unit filename="KeyListener.cpp" />
 		<Unit filename="KeyListener.h" />
 		<Unit filename="MouseListener.cpp" />
 		<Unit filename="MouseListener.h" />
+		<Unit filename="Orbit.cpp" />
+		<Unit filename="Orbit.h" />
 		<Unit filename="WindowEventListener.cpp" />
 		<Unit filename="WindowEventListener.h" />
 		<Unit filename="etc/plugins.cfg" />
