@@ -58,28 +58,30 @@ namespace SpaceFuckery
 
     /** Eccentricity vector */
     e = ((V*V - Mu/R)*Position - (Position.dot(Velocity))*Velocity)/Mu;
-    std::cout << "e = (" << e.getX() << "," << e.getY() << "," << e.getZ() << ")" << std::endl;
+    //std::cout << "e = (" << e.getX() << "," << e.getY() << "," << e.getZ() << ")" << std::endl;
     ECCE = e.length(); // Eccentricity
 
 
     /** Specific orbital energy */
     btScalar E = V*V/2 - Mu/R;
-    std::cout << "E = " << E << std::endl;
+    //std::cout << "E = " << E << std::endl;
 
     /** Semi-major axis and periapsis */
-    if (e.length() != 1)
+    if (ECCE != 1)
     {
       a = -Mu/(2*E);
-      Periapsis = a*(1 - e.length()*e.length());
+      Periapsis = a*(1 - ECCE);
+      Apoapsis = a*(1 + ECCE);
     }
     else
     {
       a = INFINITY;
+      Apoapsis = INFINITY;
       Periapsis = H*H/Mu;
     }
 
     /** I0: inclination */
-    I0 = std::acos(h.getZ()/H);
+    I0 = std::acos(Hy/H);
 
     /** RAAN: Right ascension of ascending node */
     RAAN = std::acos(nhat.getX()/nhat.length());
@@ -87,12 +89,31 @@ namespace SpaceFuckery
     /** ARGP: Argument of periapsis */
     RAAN = std::acos(nhat.dot(e)/(nhat.length()*ECCE));
 
-    /** TA: True anomaly*/
-    TA = std::acos(e.dot(Position)/(ECCE*Position.length()));
-
-    btScalar PlusMinus = a*ECCE;
-    Periapsis = a - PlusMinus; // Periapsis
-    Apoapsis = a + PlusMinus; // Apoapsis
+    /** TA: True anomaly */
+    if (ECCE > 0) {
+      if (Position.dot(Velocity) < 0) {
+        TA = twoPi - std::acos(e.dot(Position)/(ECCE*R));
+      }
+      else {
+        TA = std::acos(e.dot(Position)/(ECCE*R));
+      }
+    }
+    else if (ECCE == 0 && I0 != 0) {
+      if (nhat.dot(Velocity) > 0) {
+        TA = twoPi - std::acos(nhat.dot(Position)/(nhat.length()*R));
+      }
+      else {
+        TA = std::acos(nhat.dot(Position)/(nhat.length()*R));
+      }
+    }
+    else if (ECCE == 0 && I0 == 0) {
+      if (Velocity.getX() > 0) {
+        TA = twoPi - std::acos(Position.getX()/(R));
+      }
+      else {
+        TA = std::acos(Position.getX()/(R));
+      }
+    }
   }
 
   btScalar Orbit::getI0(void)
@@ -144,13 +165,13 @@ namespace SpaceFuckery
   std::ostream& operator << ( std::ostream& o, const Orbit& v )
   {
       //o << "Orbit(" << "ECCE: " << v.ECCE << ", " << "I0: " << v.I0*180/Pi << ", " << "RAAN: " << v.RAAN*180/Pi << ", " << "ARGP: " << v.ARGP*180/Pi << ", " << "N0: " << v.N0 << ", " << "M0: " << v.M0 << ", " << "a: " << v.a << ", " << "Periapsis: " << v.Periapsis << ", " << "Apoapsis: " << v.Apoapsis << ")";
-      o << v.ECCE << ", " << v.Position.length() << ", " << v.Velocity.length() << ", " << v.I0*180/Pi << ", " << v.Periapsis << ", " << v.Apoapsis;
+      o << v.ECCE << ",\t" << v.Position.length() << ",\t" << v.Velocity.length() << ",\t" << v.I0*180/Pi << ",\t" << v.Periapsis << ",\t" << v.Apoapsis << ",\t" << v.TA*180/Pi;
       return o;
   }
 
     void Orbit::printVector(void)
   {
-      std::cout << std::setprecision(6);
+      std::cout << std::setprecision(5);
       std::cout << Position.getX() << ", " << Position.getY() << ", " << Position.getZ() << " -- " << Velocity.getX() << ", " << Velocity.getY() << ", " << Velocity.getZ() << std::endl;
   }
 }

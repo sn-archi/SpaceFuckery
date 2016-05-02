@@ -66,17 +66,17 @@ namespace SpaceFuckery {
         btRigidBody* body = btRigidBody::upcast (obj);
 
         Orbit suzzyOrbit = Orbit(body->getCenterOfMassPosition(),body->getLinearVelocity(), btVector3(0,0,0), 1);
-        std::cout << std::setprecision(6);
+        std::cout << std::setprecision(5);
         std::cout << suzzyOrbit << std::endl;
-        suzzyOrbit.printVector();
+//        suzzyOrbit.printVector();
 
         btVector3 currentForce = calcForce(body);
-        std::cout << currentForce.getX() << ", " << currentForce.getY() << ", " << currentForce.getZ() << std::endl;
+//        std::cout << currentForce.getX() << ", " << currentForce.getY() << ", " << currentForce.getZ() << std::endl;
 
         body->applyCentralForce(currentForce);
       }
 
-      Application::getSingleton().getPhysicsEngine()->stepSimulation(lastFrameLength,1,1.f/60.f);
+      Application::getSingleton().getPhysicsEngine()->stepSimulation(lastFrameLength,10,1.f/240.f);
 
       for (int i = 0; i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); i++) {
         btCollisionObject* obj = Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i];
@@ -97,7 +97,7 @@ namespace SpaceFuckery {
         }
       }
     lastFrameTime = mTimer->getMicroseconds();
-    std::cout << 1/lastFrameLength << std::endl;
+    //std::cout << 1/lastFrameLength << std::endl;
     return true;
     }
 

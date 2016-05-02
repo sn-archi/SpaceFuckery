@@ -198,7 +198,7 @@ namespace SpaceFuckery
     /** Setup some physics for our objects */
     btTransform suzzyTransform;
     suzzyTransform.setIdentity();
-    suzzyTransform.setOrigin(btVector3(0., 0., 200.));
+    suzzyTransform.setOrigin(btVector3(0., 0., 100.));
 
     /** Setup some physics for our objects */
     //btTransform earthTransform;
@@ -240,7 +240,7 @@ namespace SpaceFuckery
 //    mPhysicsEngine->setCollisionObjectCount();
 
     /** Give Suzzy some speed */
-    suzzyBody->setLinearVelocity(btVector3(10., 0., 0.));
+    suzzyBody->setLinearVelocity(btVector3(63.1352929739692, 0., 0.));
   }
 
   /** Rendering loop kinda happens here */
