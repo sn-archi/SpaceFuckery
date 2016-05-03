@@ -42,14 +42,14 @@ namespace SpaceFuckery
       Application();
       virtual ~Application();
       virtual bool go();
-      virtual Ogre::RenderWindow* getWindow(void);
-      virtual Ogre::SceneManager* getSceneMgr(void);
-      virtual bool getShutDown(void);
-      virtual void setShutDown(bool value);
-      virtual OIS::Mouse* getMouse(void);
-      virtual OIS::Keyboard* getKeyboard(void);
-      virtual OIS::InputManager* getInputManager(void);
-      virtual SpaceFuckery::physicsEngine* getPhysicsEngine(void);
+      virtual Ogre::RenderWindow* getWindow (void);
+      virtual Ogre::SceneManager* getSceneMgr (void);
+      virtual bool getShutDown (void);
+      virtual void setShutDown (bool value);
+      virtual OIS::Mouse* getMouse (void);
+      virtual OIS::Keyboard* getKeyboard (void);
+      virtual OIS::InputManager* getInputManager (void);
+      virtual SpaceFuckery::physicsEngine* getPhysicsEngine (void);
 
     private:
       Ogre::Root* mRoot;

@@ -25,10 +25,10 @@ namespace SpaceFuckery
     private:
       int mCollisionObjectCount;
     public:
-      physicsEngine(btDispatcher* dispatcher,btBroadphaseInterface* pairCache,btConstraintSolver* solver,btCollisionConfiguration* collisionConfiguration);
+      physicsEngine (btDispatcher* dispatcher, btBroadphaseInterface* pairCache, btConstraintSolver* solver, btCollisionConfiguration* collisionConfiguration);
       virtual ~physicsEngine();
-      virtual int getCollisionObjectCount(void);
-      virtual void setCollisionObjectCount(void);
+      virtual int getCollisionObjectCount (void);
+      virtual void setCollisionObjectCount (void);
   };
 }
 

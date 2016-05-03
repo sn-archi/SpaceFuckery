@@ -49,10 +49,10 @@ namespace SpaceFuckery
   {
     //Initialise our physics engine
     collisionConfiguration = new btDefaultCollisionConfiguration();
-    dispatcher = new btCollisionDispatcher(collisionConfiguration);
+    dispatcher = new btCollisionDispatcher (collisionConfiguration);
     pairCache = new btDbvtBroadphase();
     solver = new btSequentialImpulseConstraintSolver();
-    mPhysicsEngine = new SpaceFuckery::physicsEngine(dispatcher, pairCache, solver, collisionConfiguration);
+    mPhysicsEngine = new SpaceFuckery::physicsEngine (dispatcher, pairCache, solver, collisionConfiguration);
   }
 
   Application::~Application ()
@@ -64,8 +64,8 @@ namespace SpaceFuckery
     delete mPhysicsEngine;
     // Remove ourself as a Window listener
     // For some reasons that needs investigating this is the right way to do it.
-    Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, mWindowEventListener);
-    mWindowEventListener->windowClosed(mWindow);
+    Ogre::WindowEventUtilities::removeWindowEventListener (mWindow, mWindowEventListener);
+    mWindowEventListener->windowClosed (mWindow);
     delete mRoot;
   }
 
@@ -74,22 +74,25 @@ namespace SpaceFuckery
   bool Application::loadRessources (Ogre::String Cfg)
   {
     Ogre::ConfigFile cf;
-    cf.load(Cfg);
+    cf.load (Cfg);
 
     Ogre::String name, locType, secName;
-    Ogre::ConfigFile::SectionIterator secIt(cf.getSectionIterator() );
-    while (secIt.hasMoreElements() )
+    Ogre::ConfigFile::SectionIterator secIt (cf.getSectionIterator());
+
+    while (secIt.hasMoreElements())
       {
         secName = secIt.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap* settings(secIt.getNext());
+        Ogre::ConfigFile::SettingsMultiMap* settings (secIt.getNext());
         Ogre::ConfigFile::SettingsMultiMap::iterator it;
+
         for (it = settings->begin(); it != settings->end(); ++it)
           {
             locType = it->first;
             name = it->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType, secName);
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation (name, locType, secName);
           }
       }
+
     return true;
   }
 
@@ -105,134 +108,134 @@ namespace SpaceFuckery
     mWindowEventListener = new WindowEventListener;
     mFrameListener = new FrameListener;
 
-    mWindow->getCustomAttribute("WINDOW", &windowHnd);
+    mWindow->getCustomAttribute ("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
-    pl.insert (std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+    pl.insert (std::make_pair (std::string ("WINDOW"), windowHndStr.str()));
 
     // Setup the mouse so that it doesn't get stuck inside the window
-    #if defined OIS_WIN32_PLATFORM
-    pl.insert(std::make_pair(std::string("w32_mouse"),std::string("DISCL_FOREGROUND") ));
-    pl.insert(std::make_pair(string("w32_mouse"),string("DISCL_EXCLUSIVE") ));
-    pl.insert(std::make_pair(std::string("w32_keyboard"),std::string("DISCL_FOREGROUND") ));
-    pl.insert(std::make_pair(string("w32_keyboard"),string("DISCL_EXCLUSIVE") ));
-    #elif defined OIS_LINUX_PLATFORM
-    pl.insert(std::make_pair(std::string("x11_mouse_grab"),std::string("false") ));
-    pl.insert(std::make_pair(std::string("x11_keyboard_grab"),std::string("false") ));
-    #endif
+#if defined OIS_WIN32_PLATFORM
+    pl.insert (std::make_pair (std::string ("w32_mouse"), std::string ("DISCL_FOREGROUND")));
+    pl.insert (std::make_pair (string ("w32_mouse"), string ("DISCL_EXCLUSIVE")));
+    pl.insert (std::make_pair (std::string ("w32_keyboard"), std::string ("DISCL_FOREGROUND")));
+    pl.insert (std::make_pair (string ("w32_keyboard"), string ("DISCL_EXCLUSIVE")));
+#elif defined OIS_LINUX_PLATFORM
+    pl.insert (std::make_pair (std::string ("x11_mouse_grab"), std::string ("false")));
+    pl.insert (std::make_pair (std::string ("x11_keyboard_grab"), std::string ("false")));
+#endif
 
     // Setup our input listeners
-    mInputManager = OIS::InputManager::createInputSystem(pl);
-    mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
-    mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
-    mMouse->setEventCallback(mMouseListener);
-    mKeyboard->setEventCallback(mKeyListener);
+    mInputManager = OIS::InputManager::createInputSystem (pl);
+    mKeyboard = static_cast<OIS::Keyboard*> (mInputManager->createInputObject (OIS::OISKeyboard, true));
+    mMouse = static_cast<OIS::Mouse*> (mInputManager->createInputObject (OIS::OISMouse, true));
+    mMouse->setEventCallback (mMouseListener);
+    mKeyboard->setEventCallback (mKeyListener);
 
     //Set initial mouse clipping size
-    mWindowEventListener->windowResized(mWindow);
+    mWindowEventListener->windowResized (mWindow);
 
     //Register a window listener for the main window
-    Ogre::WindowEventUtilities::addWindowEventListener(mWindow, mWindowEventListener);
+    Ogre::WindowEventUtilities::addWindowEventListener (mWindow, mWindowEventListener);
 
     //Register a frame listener
-    mRoot->addFrameListener(mFrameListener);
+    mRoot->addFrameListener (mFrameListener);
   }
 
   // Load our GUI objects from our XML CEGUI layout
   void Application::createGUI (void)
   {
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-    CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
-    CEGUI::Font::setDefaultResourceGroup("Fonts");
-    CEGUI::Scheme::setDefaultResourceGroup("Schemes");
-    CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
-    CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+    CEGUI::ImageManager::setImagesetDefaultResourceGroup ("Imagesets");
+    CEGUI::Font::setDefaultResourceGroup ("Fonts");
+    CEGUI::Scheme::setDefaultResourceGroup ("Schemes");
+    CEGUI::WidgetLookManager::setDefaultResourceGroup ("LookNFeel");
+    CEGUI::WindowManager::setDefaultResourceGroup ("Layouts");
 
-    CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme");
-    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
-    CEGUI::Window* flightWin = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("flight.layout");
-    CEGUI::Window* quitButton = flightWin->getChild("QuitButton");
-    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(flightWin);
+    CEGUI::SchemeManager::getSingleton().createFromFile ("TaharezLook.scheme");
+    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage ("TaharezLook/MouseArrow");
+    CEGUI::Window* flightWin = CEGUI::WindowManager::getSingleton().loadLayoutFromFile ("flight.layout");
+    CEGUI::Window* quitButton = flightWin->getChild ("QuitButton");
+    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow (flightWin);
 
-    quitButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Application::quit, this));
+    quitButton->subscribeEvent (CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber (&Application::quit, this));
   }
 
   // Goto function to create a testing scene inside the Application.
   // Should disapear at some point.
   void Application::createScene (void)
   {
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps (5);
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
+    mSceneMgr = mRoot->createSceneManager (Ogre::ST_GENERIC);
     Ogre::Camera* mCamera;
-    mCamera = mSceneMgr->createCamera("MainCam");
-    mCamera->setPosition(0, 500, 100);
-    mCamera->lookAt(0, 0, 50);
-    mCamera->setNearClipDistance(1);
-    mCamera->setFarClipDistance(150000);
+    mCamera = mSceneMgr->createCamera ("MainCam");
+    mCamera->setPosition (0, 500, 100);
+    mCamera->lookAt (0, 0, 50);
+    mCamera->setNearClipDistance (1);
+    mCamera->setFarClipDistance (150000);
 
-    Ogre::Viewport* vp = mWindow->addViewport(mCamera);
-    vp->setBackgroundColour (Ogre::ColourValue(0, 0, 0) );
+    Ogre::Viewport* vp = mWindow->addViewport (mCamera);
+    vp->setBackgroundColour (Ogre::ColourValue (0, 0, 0));
 
-    mCamera->setAspectRatio(
-      Ogre::Real(vp->getActualWidth() ) /
-      Ogre::Real(vp->getActualHeight() ) );
+    mCamera->setAspectRatio (
+      Ogre::Real (vp->getActualWidth()) /
+      Ogre::Real (vp->getActualHeight()));
 
-    Ogre::Entity* suzzyEntity = mSceneMgr->createEntity("Suzanne.mesh");
-    Ogre::Entity* earthEntity = mSceneMgr->createEntity("Suzanne.mesh");
+    Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
+    Ogre::Entity* earthEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
-    Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Suzzy");
+    Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode ("Suzzy");
     //Ogre::SceneNode* earthNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Earth");
-    suzzyNode->attachObject(suzzyEntity);
+    suzzyNode->attachObject (suzzyEntity);
     //earthNode->attachObject(earthEntity);
 
     //earthNode->scale(6.0e6, 6.0e6, 6.0e6);
-    suzzyNode->scale(10., 10., 10.);
+    suzzyNode->scale (10., 10., 10.);
 
-    mSceneMgr->setAmbientLight(Ogre::ColourValue (.5, .5, .5));
+    mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5));
 
-    Ogre::Light* light = mSceneMgr->createLight("MainLight");
+    Ogre::Light* light = mSceneMgr->createLight ("MainLight");
     mSceneMgr->createLight();
-    light->setPosition(200, 400, 500);
+    light->setPosition (200, 400, 500);
 
     /** Setup some physics for our objects */
     btTransform suzzyTransform;
     suzzyTransform.setIdentity();
-    suzzyTransform.setOrigin(btVector3(0., 0., 100.));
+    suzzyTransform.setOrigin (btVector3 (0., 0., 100.));
 
     /** Setup some physics for our objects */
     //btTransform earthTransform;
     //earthTransform.setIdentity();
     //earthTransform.setOrigin(btVector3(0., 0., 0.));
 
-    btScalar suzzyMass(1.);
+    btScalar suzzyMass (1.);
     //btScalar earthMass(5.97237e24);
-    btVector3 localSuzzyInertia(0., 0., 0.);
+    btVector3 localSuzzyInertia (0., 0., 0.);
     //btVector3 localEarthInertia(0., 0., 0.);
 
-    btCollisionShape *suzzyShape = new btBoxShape(btVector3(btScalar (1000.), btScalar (1000.), btScalar (1000.)));
-    btDefaultMotionState *suzzyMotionState = new btDefaultMotionState(suzzyTransform);
+    btCollisionShape* suzzyShape = new btBoxShape (btVector3 (btScalar (1000.), btScalar (1000.), btScalar (1000.)));
+    btDefaultMotionState* suzzyMotionState = new btDefaultMotionState (suzzyTransform);
 
     //btCollisionShape *earthShape = new btSphereShape(btScalar(6.0e6));
     //btDefaultMotionState *earthMotionState = new btDefaultMotionState(earthTransform);
 
-    suzzyShape->calculateLocalInertia(suzzyMass, localSuzzyInertia);
+    suzzyShape->calculateLocalInertia (suzzyMass, localSuzzyInertia);
     //earthShape->calculateLocalInertia(earthMass, localEarthInertia);
 
-    btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo(suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
-    btRigidBody* suzzyBody = new btRigidBody(suzzyRBInfo);
+    btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo (suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
+    btRigidBody* suzzyBody = new btRigidBody (suzzyRBInfo);
 
     //btRigidBody::btRigidBodyConstructionInfo earthRBInfo(earthMass, earthMotionState, earthShape, localEarthInertia);
     //btRigidBody* earthBody = new btRigidBody(earthRBInfo);
 
-    suzzyBody->setUserPointer(suzzyNode);
-    suzzyBody->setDamping(0.,0.);
+    suzzyBody->setUserPointer (suzzyNode);
+    suzzyBody->setDamping (0., 0.);
 
     //earthBody->setUserPointer(earthNode);
     //earthBody->setDamping(0.,0.);
 
     /** add the body to the dynamics world */
-    mPhysicsEngine->addRigidBody(suzzyBody);
+    mPhysicsEngine->addRigidBody (suzzyBody);
     mPhysicsEngine->setCollisionObjectCount();
 
     /** add the earth to the dynamics world */
@@ -240,7 +243,7 @@ namespace SpaceFuckery
 //    mPhysicsEngine->setCollisionObjectCount();
 
     /** Give Suzzy some speed */
-    suzzyBody->setLinearVelocity(btVector3(63.1352929739692, 0., 0.));
+    suzzyBody->setLinearVelocity (btVector3 (63.1352929739692, 0., 0.));
   }
 
   /** Rendering loop kinda happens here */
@@ -249,6 +252,7 @@ namespace SpaceFuckery
     while (true)
       {
         Ogre::WindowEventUtilities::messagePump();
+
         if (!mRoot->renderOneFrame()) return false;
       }
   }
@@ -259,14 +263,14 @@ namespace SpaceFuckery
     mResourcesCfg = "etc/resources.cfg";
     mPluginsCfg = "etc/plugins.cfg";
 
-    mRoot = new Ogre::Root(mPluginsCfg);
+    mRoot = new Ogre::Root (mPluginsCfg);
 
-    Application::loadRessources(mResourcesCfg);
+    Application::loadRessources (mResourcesCfg);
 
-    if (!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
+    if (! (mRoot->restoreConfig() || mRoot->showConfigDialog()))
       return false;
 
-    mWindow = mRoot->initialise(true, "SpaceFuckery");
+    mWindow = mRoot->initialise (true, "SpaceFuckery");
 
     Application::createScene();
     Application::createGUI();

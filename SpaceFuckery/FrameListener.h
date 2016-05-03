@@ -21,9 +21,9 @@ namespace SpaceFuckery
     public:
       FrameListener();
     private:
-      virtual bool frameRenderingQueued (const Ogre::FrameEvent& evt);
-      virtual bool frameStarted (const Ogre::FrameEvent& evt);
-      virtual bool frameEnded (const Ogre::FrameEvent& evt);
+      virtual bool frameRenderingQueued (const Ogre::FrameEvent &evt);
+      virtual bool frameStarted (const Ogre::FrameEvent &evt);
+      virtual bool frameEnded (const Ogre::FrameEvent &evt);
       btVector3 calcForce (const btRigidBody* ship);
       Ogre::Timer* mTimer;
       unsigned long lastFrameTime;

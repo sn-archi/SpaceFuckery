@@ -25,7 +25,7 @@ namespace SpaceFuckery
     ms.width = width;
     ms.height = height;
     //Notify CEGUI of the window size change
-    CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Sizef(static_cast <float>(width), static_cast <float>(height)));
+    CEGUI::System::getSingleton().notifyDisplaySizeChanged (CEGUI::Sizef (static_cast <float> (width), static_cast <float> (height)));
   }
 
   //Unattach OIS before window shutdown (very important under Linux)
@@ -35,13 +35,14 @@ namespace SpaceFuckery
     OIS::Keyboard* mKeyboard = Application::getSingleton().getKeyboard();
     Ogre::RenderWindow* mWindow = Application::getSingleton().getWindow();
     OIS::InputManager* mInputManager = Application::getSingleton().getInputManager();
+
     //Only close for window that created OIS (the main window in these demos)
     if (rw == mWindow)
       {
         if (mInputManager)
           {
-            mInputManager->destroyInputObject ( mMouse );
-            mInputManager->destroyInputObject ( mKeyboard );
+            mInputManager->destroyInputObject (mMouse);
+            mInputManager->destroyInputObject (mKeyboard);
 
             OIS::InputManager::destroyInputSystem (mInputManager);
             mInputManager = 0;

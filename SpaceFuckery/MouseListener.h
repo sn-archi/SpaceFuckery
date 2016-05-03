@@ -18,9 +18,9 @@ namespace SpaceFuckery
     public OIS::MouseListener
   {
     private:
-      virtual bool mouseMoved ( const OIS::MouseEvent &arg );
-      virtual bool mousePressed ( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-      virtual bool mouseReleased ( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+      virtual bool mouseMoved (const OIS::MouseEvent &arg);
+      virtual bool mousePressed (const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+      virtual bool mouseReleased (const OIS::MouseEvent &arg, OIS::MouseButtonID id);
   };
 }
 

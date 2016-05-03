@@ -27,17 +27,17 @@ namespace SpaceFuckery
       /** Update an orbit with a new position and velocity */
       void update (btVector3 Position, btVector3 Velocity);
       /** Accessors */
-      btScalar getI0(void);
-      btScalar getRAAN(void);
-      btScalar getARGP(void);
-      btScalar getECCE(void);
-      btScalar getN0(void);
-      btScalar getM0(void);
-      btScalar geta(void);
-      btVector3 getPosition(void);
-      btVector3 getVelocity(void);
-      friend std::ostream& operator << ( std::ostream& o, const Orbit& v );
-      void printVector(void);
+      btScalar getI0 (void);
+      btScalar getRAAN (void);
+      btScalar getARGP (void);
+      btScalar getECCE (void);
+      btScalar getN0 (void);
+      btScalar getM0 (void);
+      btScalar geta (void);
+      btVector3 getPosition (void);
+      btVector3 getVelocity (void);
+      friend std::ostream &operator << (std::ostream &o, const Orbit &v);
+      void printVector (void);
 
     private:
       btVector3 Position;       // Instantaneous Position
