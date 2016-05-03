@@ -40,6 +40,7 @@ namespace SpaceFuckery
 
   }
 
+  /** Update Orbit from state vectors */
   void Orbit::update (btVector3 Position, btVector3 Velocity)
   {
     /** distance and speed to central body */
@@ -57,19 +58,16 @@ namespace SpaceFuckery
     btVector3 nhat = Khat.cross (h);
 
     /** Eccentricity vector */
-    e = ( (V * V - Mu / R) * Position - (Position.dot (Velocity)) * Velocity) / Mu;
-    //std::cout << "e = (" << e.getX() << "," << e.getY() << "," << e.getZ() << ")" << std::endl;
+    e = ( (V * V - earthMu / R) * Position - (Position.dot (Velocity)) * Velocity) / earthMu;
     ECCE = e.length(); // Eccentricity
 
-
     /** Specific orbital energy */
-    btScalar E = V * V / 2 - Mu / R;
-    //std::cout << "E = " << E << std::endl;
+    btScalar E = V * V / 2 - earthMu / R;
 
     /** Semi-major axis and periapsis */
     if (ECCE != 1)
       {
-        a = -Mu / (2 * E);
+        a = -earthMu / (2 * E);
         Periapsis = a * (1 - ECCE);
         Apoapsis = a * (1 + ECCE);
       }
@@ -77,7 +75,7 @@ namespace SpaceFuckery
       {
         a = INFINITY;
         Apoapsis = INFINITY;
-        Periapsis = H * H / Mu;
+        Periapsis = H * H / earthMu;
       }
 
     /** I0: inclination */

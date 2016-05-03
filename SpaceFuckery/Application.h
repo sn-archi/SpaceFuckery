@@ -25,7 +25,7 @@
 
 #include <iomanip>
 
-// Predefine a our class
+// Predefine our class
 namespace SpaceFuckery {class Application;}
 
 // Do I really need to export this ?
@@ -33,8 +33,8 @@ template class _OgreExport Ogre::Singleton<SpaceFuckery::Application>;
 
 namespace SpaceFuckery
 {
-  // The application class is our application defined as a singleton.
-  // Only one instance will be allocated and will be accessible throughout our program
+  /** The application class is our application defined as a singleton.
+      Only one instance will be allocated and will be accessible throughout our program */
   class Application:
     public Ogre::Singleton<Application>
   {

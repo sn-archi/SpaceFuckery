@@ -1,5 +1,5 @@
-#ifndef ORBIT_H
-#define ORBIT_H
+#ifndef ORBIT_H_INCLUDED
+#define ORBIT_H_INCLUDED
 
 /*************************************************
 *                                                *
@@ -58,4 +58,4 @@ namespace SpaceFuckery
       int Epoch;
   };
 }
-#endif // ORBIT_H
+#endif // ORBIT_H_INCLUDED

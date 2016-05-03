@@ -69,8 +69,8 @@ namespace SpaceFuckery
     delete mRoot;
   }
 
-  // Resource configuration loader
-  // Parses our config file for resource locations
+  /** Resource configuration loader
+      Parses our config file for resource locations */
   bool Application::loadRessources (Ogre::String Cfg)
   {
     Ogre::ConfigFile cf;
@@ -96,8 +96,8 @@ namespace SpaceFuckery
     return true;
   }
 
-  // Create and activate the various listeners that will handle
-  // mouse, keyboard or frame events
+  /** Create and activate the various listeners that will handle
+      mouse, keyboard, window or frame events */
   void Application::createListeners (void)
   {
     OIS::ParamList pl;
@@ -140,7 +140,7 @@ namespace SpaceFuckery
     mRoot->addFrameListener (mFrameListener);
   }
 
-  // Load our GUI objects from our XML CEGUI layout
+  /** Initialize CEGUI and load our GUI objects from our XML CEGUI layout */
   void Application::createGUI (void)
   {
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
@@ -159,8 +159,8 @@ namespace SpaceFuckery
     quitButton->subscribeEvent (CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber (&Application::quit, this));
   }
 
-  // Goto function to create a testing scene inside the Application.
-  // Should disapear at some point.
+  /** Sample function to create a testing scene inside the Application.
+      Should disapear at some point. */
   void Application::createScene (void)
   {
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps (5);
@@ -182,14 +182,9 @@ namespace SpaceFuckery
       Ogre::Real (vp->getActualHeight()));
 
     Ogre::Entity* suzzyEntity = mSceneMgr->createEntity ("Suzanne.mesh");
-    Ogre::Entity* earthEntity = mSceneMgr->createEntity ("Suzanne.mesh");
 
     Ogre::SceneNode* suzzyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode ("Suzzy");
-    //Ogre::SceneNode* earthNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Earth");
     suzzyNode->attachObject (suzzyEntity);
-    //earthNode->attachObject(earthEntity);
-
-    //earthNode->scale(6.0e6, 6.0e6, 6.0e6);
     suzzyNode->scale (10., 10., 10.);
 
     mSceneMgr->setAmbientLight (Ogre::ColourValue (.5, .5, .5));
@@ -203,44 +198,23 @@ namespace SpaceFuckery
     suzzyTransform.setIdentity();
     suzzyTransform.setOrigin (btVector3 (0., 0., 100.));
 
-    /** Setup some physics for our objects */
-    //btTransform earthTransform;
-    //earthTransform.setIdentity();
-    //earthTransform.setOrigin(btVector3(0., 0., 0.));
-
     btScalar suzzyMass (1.);
-    //btScalar earthMass(5.97237e24);
     btVector3 localSuzzyInertia (0., 0., 0.);
-    //btVector3 localEarthInertia(0., 0., 0.);
 
     btCollisionShape* suzzyShape = new btBoxShape (btVector3 (btScalar (1000.), btScalar (1000.), btScalar (1000.)));
     btDefaultMotionState* suzzyMotionState = new btDefaultMotionState (suzzyTransform);
 
-    //btCollisionShape *earthShape = new btSphereShape(btScalar(6.0e6));
-    //btDefaultMotionState *earthMotionState = new btDefaultMotionState(earthTransform);
-
     suzzyShape->calculateLocalInertia (suzzyMass, localSuzzyInertia);
-    //earthShape->calculateLocalInertia(earthMass, localEarthInertia);
 
     btRigidBody::btRigidBodyConstructionInfo suzzyRBInfo (suzzyMass, suzzyMotionState, suzzyShape, localSuzzyInertia);
     btRigidBody* suzzyBody = new btRigidBody (suzzyRBInfo);
 
-    //btRigidBody::btRigidBodyConstructionInfo earthRBInfo(earthMass, earthMotionState, earthShape, localEarthInertia);
-    //btRigidBody* earthBody = new btRigidBody(earthRBInfo);
-
     suzzyBody->setUserPointer (suzzyNode);
     suzzyBody->setDamping (0., 0.);
-
-    //earthBody->setUserPointer(earthNode);
-    //earthBody->setDamping(0.,0.);
 
     /** add the body to the dynamics world */
     mPhysicsEngine->addRigidBody (suzzyBody);
     mPhysicsEngine->setCollisionObjectCount();
-
-    /** add the earth to the dynamics world */
-    //mPhysicsEngine->addRigidBody(earthBody);
-//    mPhysicsEngine->setCollisionObjectCount();
 
     /** Give Suzzy some speed */
     suzzyBody->setLinearVelocity (btVector3 (63.1352929739692, 0., 0.));

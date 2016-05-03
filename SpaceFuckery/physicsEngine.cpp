@@ -29,14 +29,15 @@ namespace SpaceFuckery
     // TODO: Do I need to do something here ? fire up the btDiscreteDynamicsWorld destructor ?
   }
 
-  // This is a helper function that gives us the number of objects with defined to iterate over them
+  /** This is a helper function that gives us the number of objects with defined to iterate over them
+      It kind of sucks */
   int physicsEngine::getCollisionObjectCount (void)
   {
     return mCollisionObjectCount;
   }
 
-  // Run this when you create an object that needs to have gravity to keep count
-  // TODO: This is really bad code that will lead to funky mistakes. Fix it.
+  /** Run this when you create an object that needs to have gravity to keep count
+      TODO: This is really bad code that will lead to funky mistakes. Fix it. */
   void physicsEngine::setCollisionObjectCount (void)
   {
     mCollisionObjectCount++;
