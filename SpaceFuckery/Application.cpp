@@ -7,24 +7,23 @@
 *                                                *
 **************************************************/
 
-#include "OgreException.h"
-#include "OgreConfigFile.h"
-#include "OgreSceneManager.h"
-#include "OgreCamera.h"
-#include "OgreViewport.h"
-#include "OgreEntity.h"
-#include "OgreStringVector.h"
+#include <OgreException.h>
+#include <OgreConfigFile.h>
+#include <OgreSceneManager.h>
+#include <OgreCamera.h>
+#include <OgreViewport.h>
+#include <OgreEntity.h>
+#include <OgreStringVector.h>
 
-#include "OISEvents.h"
+#include <OISEvents.h>
 
-#include "CEGUI/CEGUI.h"
+#include <CEGUI/CEGUI.h>
 
 #include "Application.h"
 #include "FrameListener.h"
 #include "WindowEventListener.h"
 #include "MouseListener.h"
 #include "KeyListener.h"
-#include "Orbit.h"
 
 namespace SpaceFuckery
 {
@@ -231,11 +230,10 @@ namespace SpaceFuckery
       }
   }
 
-  // Fires up the application. This is the Application class entry point.
   bool Application::go()
   {
-    mResourcesCfg = "etc/resources.cfg";
-    mPluginsCfg = "etc/plugins.cfg";
+    mResourcesCfg = "/home/mobarre/snarchi/workdir/etc/resources.cfg";
+    mPluginsCfg = "/home/mobarre/snarchi/workdir/etc/plugins.cfg";
 
     mRoot = new Ogre::Root (mPluginsCfg);
 
@@ -253,15 +251,12 @@ namespace SpaceFuckery
     return true;
   }
 
-  // Run when you want to qui the app.
   bool Application::quit (const CEGUI::EventArgs &e)
   {
     mShutDown = true;
     return true;
   }
 
-
-  // Accessors go here
   Ogre::RenderWindow* Application::getWindow (void)
   {
     return mWindow;

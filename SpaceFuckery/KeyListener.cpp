@@ -7,7 +7,7 @@
 *                                                *
 **************************************************/
 
-#include "CEGUI/CEGUI.h"
+#include <CEGUI/CEGUI.h>
 
 #include "Application.h"
 #include "KeyListener.h"

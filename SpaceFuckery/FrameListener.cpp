@@ -7,13 +7,14 @@
 *                                                *
 **************************************************/
 
-#include "Application.h"
-#include "FrameListener.h"
-#include "Orbit.h"
-#include "Constants.h"
-#include "CEGUI/CEGUI.h"
+#include <CEGUI/CEGUI.h>
+#include <mKOST.h>
 #include <cmath>
 #include <string>
+
+#include "Application.h"
+#include "FrameListener.h"
+#include "Constants.h"
 
 namespace SpaceFuckery
 {
@@ -24,6 +25,8 @@ namespace SpaceFuckery
   {
     mTimer = new Ogre::Timer;
     lastFrameTime = mTimer->getMicroseconds();
+    mOrbit = new mKOST::Orbit;
+    mOrbit->setMu(MU);
   }
 
   /** Calculate the gravity force to apply. This is so wrong */
@@ -37,8 +40,15 @@ namespace SpaceFuckery
     totalForce += Fg * -(currentPos - earthPos).normalized();
     CEGUI::Window* flightWin (CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow());
     CEGUI::Window* altitudeText (flightWin->getChild ("Altitude"));
-    altitudeText->setText (std::to_string (currentPos.distance (earthPos)));
+    altitudeText->setText (std::to_string (mOrbit->getParams().PeD));
     return totalForce;
+  }
+
+  btVector3 FrameListener::updatePos (const btRigidBody* ship)
+  {
+    //mKOST::StateVectors sv (mOrbit->elements2StateVectorAtTime(MeL, timeSinceEpoch, EPSILON, 1000000));
+    //return sv.pos;
+    return btVector3 (0.0, 0.0, 0.0);
   }
 
   bool FrameListener::frameRenderingQueued (const Ogre::FrameEvent &evt)
@@ -68,14 +78,15 @@ namespace SpaceFuckery
             btCollisionObject* obj (Application::getSingleton().getPhysicsEngine()->getCollisionObjectArray() [i]);
             btRigidBody* body (btRigidBody::upcast (obj));
 
-            Orbit suzzyOrbit (body->getCenterOfMassPosition(), body->getLinearVelocity(), btVector3 (0, 0, 0), 1);
-            std::cout << std::setprecision (5);
-            std::cout << suzzyOrbit << std::endl;
-
             btVector3 currentForce (calcForce (body));
             body->applyCentralForce (currentForce);
+            mKOST::StateVectors sv;
+            sv.pos = body->getCenterOfMassPosition();
+            sv.vel = body->getLinearVelocity();
+            mOrbit->refreshFromStateVectors(&sv);
           }
 
+        // Whatever happens, step the simulation
         Application::getSingleton().getPhysicsEngine()->stepSimulation (lastFrameLength, 10, 1.f / 240.f);
 
         for (int i (0); i < Application::getSingleton().getPhysicsEngine()->getCollisionObjectCount(); ++i)
